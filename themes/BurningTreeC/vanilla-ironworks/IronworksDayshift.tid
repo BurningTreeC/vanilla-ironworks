@@ -1,0 +1,154 @@
+title: $:/palettes/IronworksDayshift
+name: Ironworks Dayshift
+description: The shop by daylight - oiled canvas, graphite, rust worked into the surface
+tags: $:/tags/Palette
+type: application/x-tiddler-dictionary
+color-scheme: light
+
+alert-background: #efe2cd
+alert-border: #c08a5a
+alert-highlight: #a83a24
+alert-muted-foreground: #8a7355
+background: #e9e3d8
+blockquote-bar: <<colour muted-foreground>>
+button-background:
+button-foreground:
+button-border:
+code-background: #ded7c9
+code-border: #cec5b3
+code-foreground: #7a5615
+diff-delete-background: #e8c8bd
+diff-delete-foreground: <<colour foreground>>
+diff-equal-background:
+diff-equal-foreground: <<colour foreground>>
+diff-insert-background: #c7dbcd
+diff-insert-foreground: <<colour foreground>>
+diff-invisible-background:
+diff-invisible-foreground: <<colour muted-foreground>>
+dirty-indicator: #a83a24
+download-background: #3d7a63
+download-foreground: #e9e3d8
+dragger-background: <<colour foreground>>
+dragger-foreground: <<colour background>>
+dropdown-background: #e9e3d8
+dropdown-border: #c6bca8
+dropdown-tab-background-selected: #e9e3d8
+dropdown-tab-background: #dbd3c3
+dropzone-background: rgba(61,122,99,0.45)
+external-link-background-hover: inherit
+external-link-background-visited: inherit
+external-link-background: inherit
+external-link-foreground-hover: inherit
+external-link-foreground-visited: #63508a
+external-link-foreground: #2b5b86
+footnote-target-background: #ded7c9
+foreground: #25231f
+highlight-background: #e0cf95
+highlight-foreground: #14120f
+menubar-background: #25231f
+menubar-foreground: #e9e3d8
+message-background: #ded7c9
+message-border: #c6bca8
+message-foreground: #5f594e
+modal-backdrop: #25231f
+modal-background: #e9e3d8
+modal-border: #c6bca8
+modal-footer-background: #ded7c9
+modal-footer-border: #cec5b3
+modal-header-background: #ded7c9
+modal-header-border: #cec5b3
+muted-foreground: #756e63
+network-activity-foreground: #3d7a63
+notification-background: #efe9dd
+notification-border: #c6bca8
+page-background: #c9c0b1
+pre-background: #ded7c9
+pre-border: #cec5b3
+primary: #9d4a22
+selection-background: #cdd5da
+selection-foreground: <<colour foreground>>
+select-tag-background:
+select-tag-foreground:
+sidebar-button-foreground: <<colour foreground>>
+sidebar-controls-foreground-hover: #25231f
+sidebar-controls-foreground: #918878
+sidebar-foreground-shadow: transparent
+sidebar-foreground: #5f594e
+sidebar-muted-foreground-hover: #25231f
+sidebar-muted-foreground: #756e63
+sidebar-tab-background-selected: #e9e3d8
+sidebar-tab-background: #beb4a3
+sidebar-tab-border-selected: <<colour tab-border-selected>>
+sidebar-tab-border: <<colour tab-border>>
+sidebar-tab-divider: #beb4a3
+sidebar-tab-foreground-selected: <<colour foreground>>
+sidebar-tab-foreground: <<colour tab-foreground>>
+sidebar-tiddler-link-foreground-hover: #25231f
+sidebar-tiddler-link-foreground: #9d4a22
+site-title-foreground: <<colour tiddler-title-foreground>>
+stability-stable: #3d7a63
+stability-experimental: #8a6a1f
+stability-deprecated: #a83a24
+stability-legacy: #2b5b86
+static-alert-foreground: #918878
+tab-background-selected: #e9e3d8
+tab-background: #d5cdbc
+tab-border-selected: #c6bca8
+tab-border: #c6bca8
+tab-divider: #c6bca8
+tab-foreground-selected: <<colour foreground>>
+tab-foreground: #5f594e
+table-border: #cec5b3
+table-footer-background: #dbd3c3
+table-header-background: #ded7c9
+tag-background: #c3b8a4
+tag-foreground: #25231f
+testcase-accent-level-1: #cdd5da
+testcase-accent-level-2: #e0cf95
+testcase-accent-level-3: #c7dbcd
+tiddler-background: <<colour background>>
+tiddler-border: #cec5b3
+tiddler-controls-foreground-hover: #9d4a22
+tiddler-controls-foreground-selected: #9d4a22
+tiddler-controls-foreground: #9b917f
+tiddler-editor-background: #ded7c9
+tiddler-editor-border-image: #e9e3d8
+tiddler-editor-border: #c6bca8
+tiddler-editor-fields-even: #ded7c9
+tiddler-editor-fields-odd: #e4ded1
+tiddler-info-background: #ded7c9
+tiddler-info-border: #cec5b3
+tiddler-info-tab-background: #ded7c9
+tiddler-link-background: <<colour background>>
+tiddler-link-foreground: <<colour primary>>
+tiddler-subtitle-foreground: #918878
+tiddler-title-foreground: #14120f
+toolbar-new-button:
+toolbar-options-button:
+toolbar-save-button:
+toolbar-info-button:
+toolbar-edit-button:
+toolbar-close-button:
+toolbar-delete-button:
+toolbar-cancel-button:
+toolbar-done-button:
+untagged-background: #918878
+very-muted-foreground: #918878
+wikilist-background: #c9c0b1
+wikilist-item: #e9e3d8
+wikilist-info: #25231f
+wikilist-title: #14120f
+wikilist-title-svg: <<colour wikilist-title>>
+wikilist-url: #6b6458
+wikilist-button-open: #35674f
+wikilist-button-open-hover: #27503c
+wikilist-button-reveal: #2b5b86
+wikilist-button-reveal-hover: #1e4364
+wikilist-button-remove: #a83a24
+wikilist-button-remove-hover: #862c1a
+wikilist-toolbar-background: #beb4a3
+wikilist-toolbar-foreground: #5f594e
+wikilist-droplink-dragover: #c7dbcd
+wikilist-button-background: #5f594e
+wikilist-button-foreground: #e9e3d8
+wikilist-item-border-hover: #9d4a22

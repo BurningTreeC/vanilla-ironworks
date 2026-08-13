@@ -1,0 +1,52 @@
+title: $:/themes/BurningTreeC/vanilla-ironworks/screws
+tags: [[$:/tags/Stylesheet]]
+code-body: yes
+
+<!--
+Screw angles.
+
+Nobody drives four screws to the same angle, and nobody drives the screws in
+two panels to the same angles either. base.tid draws the heads and the slots;
+this file is the only thing that decides which way each slot points.
+
+It lives in its own stylesheet tiddler because it needs a widget: base.tid
+restricts wikitext parsing with `\rules only` and cannot contain a list. The
+same constraint put the sticky-title z-index ladder in sticky.tid.
+
+CSS has no random(). What it has is arithmetic and a position in a list, and
+that is enough: the angle for corner c of tiddler n is (n x step + offset) mod
+180, with a different step per corner. Steps that share no factor with the
+cycle length walk the whole range instead of falling into a short pattern, so
+the four screws in one plate disagree with each other, and the plate below
+disagrees with both.
+
+Deterministic, which is better than random here: a tiddler's screws do not
+twitch to new angles when it re-renders, and two people looking at the same
+wiki are looking at the same plate.
+
+The modulus is 180 rather than 360 because a slot has no top: turning one
+through half a circle gives back the slot you started with, and asking for
+angles in the range 180-360 would only repeat the first half.
+
+17 rules, so the cycle is long enough that a reader would have to count down a
+river of 18 tiddlers to catch it repeating. Vanilla's own ladder settled on
+100 rules for the same kind of trick; 17 is plenty for something this quiet.
+
+Note the quoting, because getting it wrong is silent and expensive. The CSS
+fragments are wrapped in SINGLE backticks, inside the list, so that the widgets
+between them stay live. Wrapping the whole block in double backticks instead —
+which is what this file did at first — turns the $list and every $text into
+literal text: the widget markup lands in the stylesheet verbatim, and the CSS
+parser then throws away the rule that follows it. See sticky.tid, which uses
+the same escape and closes its code span BEFORE its list starts.
+-->
+
+<$list filter="[range[17]]" variable="n">
+`.iw-screws .tc-story-river .tc-tiddler-frame:nth-child(17n+`<$text text=<<n>>/>`)::before {
+	--iw-screw-a1: `<$text text={{{ [<n>multiply[41]add[13]remainder[180]] }}}/>`deg;
+	--iw-screw-a2: `<$text text={{{ [<n>multiply[67]add[52]remainder[180]] }}}/>`deg;
+	--iw-screw-a3: `<$text text={{{ [<n>multiply[97]add[31]remainder[180]] }}}/>`deg;
+	--iw-screw-a4: `<$text text={{{ [<n>multiply[113]add[74]remainder[180]] }}}/>`deg;
+}
+`
+</$list>

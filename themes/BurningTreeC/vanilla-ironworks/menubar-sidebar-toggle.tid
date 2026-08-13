@@ -1,0 +1,11 @@
+title: $:/themes/BurningTreeC/vanilla-ironworks/menubar-sidebar-toggle
+tags: $:/tags/MenuBar
+list-before: 
+caption: Sidebar toggle
+description: Show or hide the sidebar
+custom-menu-content: <$transclude tiddler="$:/themes/BurningTreeC/vanilla-ironworks/menubar-sidebar-toggle" mode="inline"/>
+
+\whitespace trim
+<$list filter="[{$:/themes/BurningTreeC/vanilla-ironworks/options/sidebarside}match[start]]" variable="ignore">
+{{$:/themes/BurningTreeC/vanilla-ironworks/sidebar-toggle}}
+</$list>

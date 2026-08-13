@@ -1,0 +1,72 @@
+title: $:/themes/BurningTreeC/vanilla-ironworks/readme
+
+! Ironworks
+
+A machine shop for TiddlyWiki. Soot, cold iron, one ember left in the forge.
+
+It is a //standalone// theme: it does not depend on Vanilla and inherits no rule from it. It shares its layout engine with [[Notebook|$:/themes/BurningTreeC/vanilla-notebook]] and nothing else.
+
+!! What it is, and what it is not
+
+The steampunk here is read off materials and machining, never off props. There is not one cog, gear, brass gradient, ornamental frame or leather panel anywhere in the theme, and there will not be — those are costume. What is here instead is the behaviour of worked metal.
+
+Three moves and a set of fasteners, and the ornament budget is spent:
+
+# ''Plates.'' Tiddlers are cut, not moulded, so nothing is rounded. One hairline machined edge, a light catch along the top of it, and a hard 2px shadow underneath that reads as the thickness of the stock rather than as a floating card. The chassis around them carries the grain of the rollers; the reading surface stays flat, because vertical hairlines under running text is noise.
+# ''Fasteners.'' Four screws hold each plate down, one in every corner, drawn entirely in CSS — three gradients each, no image and no markup. The head is a disc with a countersink shadow and a gleam up and to the left, where `--iw-lit` puts the light on every other edge in the theme; the slot is a conic gradient, the only gradient that can cut a straight groove through a centre at an arbitrary angle. Every slot sits at its own angle, dealt out by arithmetic on the tiddler's position in the river: no two screws in a plate agree, no two plates repeat, and the angles hold still across re-renders.
+# ''Patina.'' Every plate wears its age on the face: craquelure where the finish dried out and let go, dust in the grain, and rust blooming through in patches. Four background layers on the tiddler frame — painted under the text, never over it, and pitched at the edge of visibility. The test is not whether you can see it, it is whether you can read a paragraph without noticing it. The two noise tiles are //colourless// SVG turbulence, so the structure is luminance and the rust comes from the palette; swap the palette and the plates re-rust. The tile sizes are mutually awkward, so no two plates in a river wear the same way.
+
+The ground stays flat. A textured page ground was tried and it was wrong: a corroded floor competes with the plates lying on it. The wear belongs on the plates, and the sidebar keeps the rolling grain — the mark a sheet takes from the rollers it came off.
+# ''Drafting stock.'' The editor is the one surface you work //on//, so it is the one that is ruled: scribe lines locked to the editor's own line-height, drawn faint enough to be felt under a paragraph rather than counted through one. `background-attachment: local` ties them to the text, so the ruling scrolls with it rather than staying pinned to the box. No graduations down the edge — an editor wraps, so a mark on the //n//th visual row measures nothing.
+
+!! The punk half
+
+Steam is the machining. Punk is what a shop that does not ask permission does with it — and none of it is costume either:
+
+* ''Misregistration.'' Every floating layer — dropdown, modal, notification, alert, import panel — throws a //hard// block of ink a few pixels off instead of a blurred drop shadow: the second pass of a two-colour print landing off-register. Tags get a smaller one, so they read as stickers slapped on rather than pills.
+* ''Hazard tape.'' Two things in a wiki are worth taping off, and they get the same stripe from the same token: a drag-and-drop target, and a plate that is open and unsaved. One pattern, two meanings — the consumer sets the ink, so drag stays green by palette convention and a draft stays rust.
+* ''Marks, not decoration.'' A link in running text is //marked// with an uneven drawn stroke rather than underlined, and firms up into one solid stroke on hover. A highlight is a marker run at an angle that overshoots one end. A divider is a hand-scored cut, not a printed rule.
+* ''Defacement.'' A title that names nothing is struck through in oxide — the mark you make on a job sheet for a part that is not in the rack. It replaced an inherited //italic//, which is the weakest signal available and the most generated-looking thing a stylesheet can do.
+
+Type is stamped, not set. Titles and labels take a condensed grotesque — the lettering of a maker's plate, uppercase and tracked out for labels; running text takes an Egyptian slab, which is what the industrial press actually printed with. All display type is roman.
+
+!! Colour
+
+There is not one hardcoded colour in the stylesheets. Every colour resolves from the `--tpc-*` custom properties the core generates from the active palette, and everything else is derived from those with `color-mix()` in OKLCH — so the theme re-tints itself under any palette, including ones that did not exist when it was written.
+
+Light and shade are the exception, and they have to be: a palette knows its colours but not which way is up. They resolve through `light-dark()` against the palette's own `color-scheme`, so the catch on a milled edge stays a highlight on a dark palette and a sheen on a light one instead of inverting into a smear.
+
+Two palettes ship with it:
+
+* ''Ironworks Nightshift'' — the shop after dark. Soot ground, iron plate, ember accent, verdigris where something succeeded, cyanotype blue for anything that leaves the wiki.
+* ''Ironworks Dayshift'' — the shop by daylight. Oiled canvas bench, drafting-canvas plate, graphite ink, the same rust at higher chroma.
+
+!! The sliding layout
+
+Vanilla changes the sidebar and story-river layout by swapping CSS rules — the `if-no-sidebar` and `if-fluid-fixed` macros wrap CSS text in a reveal widget, so toggling `$:/state/sidebar` rewrites the stylesheet. A stylesheet edit applies in a single frame with no start value to interpolate from, which is why the layout jumps.
+
+Ironworks emits every rule unconditionally and animates one registered custom property instead:
+
+```
+@property --iw-open { syntax: "<number>"; inherits: true; initial-value: 1; }
+```
+
+State reaches CSS as classes on the page container, contributed through the core's `$:/tags/ClassFilters/PageTemplate` hook. One scalar, one transition, both layouts, both text directions.
+
+!! Compatibility shim
+
+Ironworks ships three tiddlers under Vanilla's namespace:
+
+* `$:/themes/tiddlywiki/vanilla/metrics/`
+* `$:/themes/tiddlywiki/vanilla/settings/`
+* `$:/themes/tiddlywiki/vanilla/options/`
+
+This is deliberate, and it is a workaround rather than a design choice. The core and several bundled plugins read Vanilla's metric and setting paths directly regardless of which theme is active — `$:/core/stylesheets/custom-properties` builds every `--tp-*` property from them, and the menubar plugin computes its media-query breakpoints from `$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint`. With no Vanilla installed those lookups return empty, which produces invalid CSS such as `@media (max-width: )` and silently drops the affected rules.
+
+These shadow tiddlers only exist while Ironworks is the active theme, so they cannot affect a wiki that has switched back to Vanilla.
+
+> ''Installing Ironworks and Notebook side by side:'' both themes ship this shim under the same three titles, so whichever plugin loads second wins and supplies the Vanilla-namespace copies for both. The values only differ in the font stacks, and only the //inactive// theme's copy is affected — but if you keep both installed and care about the shim, check `$:/themes/tiddlywiki/vanilla/settings/fontfamily` after switching.
+
+> ''Note:'' The shim holds static copies of Ironworks' own defaults. Changing a metric in Ironworks' Control Panel tab does //not// update the Vanilla-namespace copy. If you change the sidebar breakpoint and use the menubar plugin, update `$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint` to match.
+
+The real fix belongs in the core: those lookups should resolve against the active theme rather than a hard-coded one.

@@ -1,0 +1,10 @@
+title: $:/themes/BurningTreeC/vanilla-ironworks/topleftbar-sidebar-toggle
+tags: $:/tags/TopLeftBar
+list-before: 
+
+\whitespace trim
+<$list filter="[{$:/themes/BurningTreeC/vanilla-ironworks/options/sidebarside}match[start]]" variable="ignore">
+<$list filter="[[$:/plugins/tiddlywiki/menubar]!is[tiddler]]" variable="ignore">
+{{$:/themes/BurningTreeC/vanilla-ironworks/sidebar-toggle}}
+</$list>
+</$list>

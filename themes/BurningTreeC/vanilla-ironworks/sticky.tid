@@ -1,0 +1,118 @@
+title: $:/themes/BurningTreeC/vanilla-ironworks/sticky
+tags: [[$:/tags/Stylesheet]]
+code-body: yes
+
+<!--
+Sticky tiddler titles.
+
+This lives in its own stylesheet tiddler rather than in base.tid because it
+needs widgets: a reveal to honour the option, and a list to generate the
+z-index ladder. base.tid restricts wikitext parsing with `\rules only` and so
+cannot contain either.
+
+The ladder is the non-obvious part. Once titles are sticky, a title scrolling
+inside its own frame will pass UNDER the frame that follows it in the DOM,
+because later siblings paint on top by default. Counting z-index downwards per
+position reverses that, so each title stays above the tiddlers below it. 100
+steps is the practical ceiling that Vanilla settled on.
+
+The offset is --iw-menubar-h, NOT --iw-story-top.
+
+Those two differ in kind. --iw-story-top is a layout offset: it pushes the
+story river down inside the document, and scrolling consumes it — by the time
+a title is sticking, the storytop gap has already scrolled off the screen.
+Adding it here would hold the title that much too low forever, leaving a band
+of dead space above every stuck title.
+
+--iw-menubar-h is the part that is pinned to the VIEWPORT. That is the only
+thing a sticky element has to clear, because it is the only thing still there
+after scrolling. With no menubar the value is 0 and titles stick to the top of
+the page, whatever storytop happens to be.
+
+The negative inline margins let the title's background span the sheet's full
+padding, so body text scrolls under an opaque strip instead of appearing in
+the gutter beside it.
+-->
+
+<%if [{$:/themes/BurningTreeC/vanilla-ironworks/options/stickytitles}match[yes]] %>
+``
+.tc-tiddler-title {
+	position: sticky;
+	inset-block-start: var(--iw-menubar-h, 0px);
+	z-index: 500;
+	background-color: ``<<colour tiddler-background>>``;
+
+	/*
+	Widen the strip from the sheet's content box out to its padding box, so
+	body text scrolls under an opaque band rather than appearing beside it.
+
+	These must mirror .tc-tiddler-frame's padding EXACTLY, so they read the
+	same --iw-plate-pad-start token the frame does rather than restating the
+	calculation. The frame's extra inline-start padding is unconditional — it
+	reserves the margin whether or not the rule is drawn in it — so this
+	compensation is unconditional too. Scoping it to the corrosion option left the
+	strip 34px short on the inline start whenever the rule was switched off.
+
+	Negative margins only widen a box whose inline-size is auto. Anything here
+	that sets an explicit width silently turns this back into a shift.
+	*/
+	margin-inline: calc(-1 * var(--iw-plate-pad-start)) calc(-1 * var(--iw-space-lg));
+	padding-inline: var(--iw-plate-pad-start) var(--iw-space-lg);
+	padding-block: 2px;
+
+	/*
+	A stuck title is a label plate covering the face, not a gap in it.
+
+	It has to stay OPAQUE — that is the whole mechanism, the thing body text
+	scrolls under — so it can never show the patina behind it. Left flat, it
+	reads as a hole punched in the corrosion the moment it sticks. These three
+	lines make it read as a separate part instead:
+
+	  dust        the fine grit tile ONLY, no craquelure and no stains. The
+	              strip is pinned to the viewport while the plate scrolls
+	              underneath, so anything drawn on it slides against the static
+	              texture below — and fine, non-directional noise is the one
+	              texture where that is imperceptible. Craquelure veins sliding
+	              across craquelure veins are not.
+	  light catch the same `inset 0 1px 0` every other cut edge in this theme
+	              gets, so the strip sits ON the plate rather than in it.
+	  hairline    a machined bottom edge, which is what tells you where the
+	              part ends when the text below it is scrolling past.
+	*/
+	background-image: var(--iw-dust);
+	background-size: 260px 260px;
+	border-block-end: 1px solid var(--iw-plate-edge);
+	box-shadow: inset 0 1px 0 var(--iw-lit);
+}
+
+/*
+A narrow river collapses the sheet to an even --iw-space-md padding and drops
+the margin rule (see the `@container river` block in base.tid). The strip has
+to follow that, or it overhangs the sheet by the gutter it no longer has.
+*/
+@container river (max-width: 34rem) {
+
+	.tc-tiddler-title {
+		margin-inline: calc(-1 * var(--iw-space-md));
+		padding-inline: var(--iw-space-md);
+	}
+}
+
+/*
+Why the strip carries dust and nothing else is explained on the rule above.
+
+The short version of what used to be here: while the plate wore its corrosion
+in the leading margin, a stuck title wiped that band clean wherever it came to
+rest, so the strip had to repaint the wash itself and line it up with the
+frame's. The corrosion moved to the whole face, so there is no band to
+continue — only a surface to avoid punching a hole in.
+*/
+
+``
+<$list filter="[range[100]]">
+`.tc-story-river .tc-tiddler-frame:nth-child(100n+`<$text text=<<currentTiddler>>/>`) {
+	z-index: `<$text text={{{ [[200]subtract<currentTiddler>] }}}/>`;
+}
+`
+</$list>
+<% endif %>
