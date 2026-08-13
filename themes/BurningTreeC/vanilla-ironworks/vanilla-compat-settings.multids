@@ -1,7 +1,0 @@
-title: $:/themes/tiddlywiki/vanilla/settings/
-
-fontfamily: Rockwell, "Rockwell Nova", "Roboto Slab", "Zilla Slab", "Bitstream Charter", Charter, "Noto Serif", "Liberation Serif", Georgia, serif
-codefontfamily: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace
-editorfontfamily: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace
-backgroundimageattachment: fixed
-backgroundimagesize: auto

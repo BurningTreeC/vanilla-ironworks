@@ -1,6 +1,0 @@
-title: $:/themes/BurningTreeC/vanilla-ironworks/settings/
-
-fontfamily: Rockwell, "Rockwell Nova", "Roboto Slab", "Zilla Slab", "Bitstream Charter", Charter, "Noto Serif", "Liberation Serif", Georgia, serif
-uifontfamily: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", Helvetica, Arial, sans-serif
-platefontfamily: "Roboto Condensed", "IBM Plex Sans Condensed", "Fira Sans Condensed", "Ubuntu Condensed", "PT Sans Narrow", "Archivo Narrow", "Liberation Sans Narrow", "DejaVu Sans Condensed", "Nimbus Sans Narrow", "Helvetica Neue Condensed", "Arial Narrow", ui-sans-serif, system-ui, sans-serif
-codefontfamily: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace
