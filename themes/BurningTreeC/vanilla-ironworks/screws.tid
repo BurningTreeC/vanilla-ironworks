@@ -48,6 +48,13 @@ the same escape and closes its code span BEFORE its list starts.
 	--iw-screw-a3: `<$text text={{{ [<n>multiply[97]add[31]remainder[180]] }}}/>`deg;
 	--iw-screw-a4: `<$text text={{{ [<n>multiply[113]add[74]remainder[180]] }}}/>`deg;
 }
+
+.iw-screws .tc-story-river .tc-live-reorderable:nth-child(17n+`<$text text=<<n>>/>`) .tc-tiddler-frame::before {
+	--iw-screw-a1: `<$text text={{{ [<n>multiply[41]add[13]remainder[180]] }}}/>`deg;
+	--iw-screw-a2: `<$text text={{{ [<n>multiply[67]add[52]remainder[180]] }}}/>`deg;
+	--iw-screw-a3: `<$text text={{{ [<n>multiply[97]add[31]remainder[180]] }}}/>`deg;
+	--iw-screw-a4: `<$text text={{{ [<n>multiply[113]add[74]remainder[180]] }}}/>`deg;
+}
 `
 </$list>
 
