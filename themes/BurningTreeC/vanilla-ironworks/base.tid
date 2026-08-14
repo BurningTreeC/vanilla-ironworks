@@ -528,39 +528,6 @@ code-body: yes
 	** element's background list and a custom property has a single value per
 	** element: there is nowhere to vary a shared token per layer.
 	*/
-	--iw-screw-a1: 24deg;
-	--iw-screw-a2: 107deg;
-	--iw-screw-a3: 68deg;
-	--iw-screw-a4: 142deg;
-
-	--iw-screw-slot-1: linear-gradient(
-		calc(var(--iw-screw-a1) + 90deg),
-		transparent calc(50% - 1.5px),
-		var(--iw-screw-wall) calc(50% - 1.5px) calc(50% - 0.8px),
-		var(--iw-screw-slot-ink) calc(50% - 0.8px) calc(50% + 1px),
-		transparent calc(50% + 1px)
-	);
-	--iw-screw-slot-2: linear-gradient(
-		calc(var(--iw-screw-a2) + 90deg),
-		transparent calc(50% - 1.5px),
-		var(--iw-screw-wall) calc(50% - 1.5px) calc(50% - 0.8px),
-		var(--iw-screw-slot-ink) calc(50% - 0.8px) calc(50% + 1px),
-		transparent calc(50% + 1px)
-	);
-	--iw-screw-slot-3: linear-gradient(
-		calc(var(--iw-screw-a3) + 90deg),
-		transparent calc(50% - 1.5px),
-		var(--iw-screw-wall) calc(50% - 1.5px) calc(50% - 0.8px),
-		var(--iw-screw-slot-ink) calc(50% - 0.8px) calc(50% + 1px),
-		transparent calc(50% + 1px)
-	);
-	--iw-screw-slot-4: linear-gradient(
-		calc(var(--iw-screw-a4) + 90deg),
-		transparent calc(50% - 1.5px),
-		var(--iw-screw-wall) calc(50% - 1.5px) calc(50% - 0.8px),
-		var(--iw-screw-slot-ink) calc(50% - 0.8px) calc(50% + 1px),
-		transparent calc(50% + 1px)
-	);
 
 	/* One mask layer per screw, the same box and the same radius as the head,
 	   so the disc is what every layer is cut to. */

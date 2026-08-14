@@ -50,3 +50,36 @@ the same escape and closes its code span BEFORE its list starts.
 }
 `
 </$list>
+
+`.iw-screws .tc-story-river .tc-tiddler-frame::before {
+
+	--iw-screw-slot-1: linear-gradient(
+		calc(var(--iw-screw-a1) + 90deg),
+		transparent calc(50% - 1.5px),
+		var(--iw-screw-wall) calc(50% - 1.5px) calc(50% - 0.8px),
+		var(--iw-screw-slot-ink) calc(50% - 0.8px) calc(50% + 1px),
+		transparent calc(50% + 1px)
+	);
+	--iw-screw-slot-2: linear-gradient(
+		calc(var(--iw-screw-a2) + 90deg),
+		transparent calc(50% - 1.5px),
+		var(--iw-screw-wall) calc(50% - 1.5px) calc(50% - 0.8px),
+		var(--iw-screw-slot-ink) calc(50% - 0.8px) calc(50% + 1px),
+		transparent calc(50% + 1px)
+	);
+	--iw-screw-slot-3: linear-gradient(
+		calc(var(--iw-screw-a3) + 90deg),
+		transparent calc(50% - 1.5px),
+		var(--iw-screw-wall) calc(50% - 1.5px) calc(50% - 0.8px),
+		var(--iw-screw-slot-ink) calc(50% - 0.8px) calc(50% + 1px),
+		transparent calc(50% + 1px)
+	);
+	--iw-screw-slot-4: linear-gradient(
+		calc(var(--iw-screw-a4) + 90deg),
+		transparent calc(50% - 1.5px),
+		var(--iw-screw-wall) calc(50% - 1.5px) calc(50% - 0.8px),
+		var(--iw-screw-slot-ink) calc(50% - 0.8px) calc(50% + 1px),
+		transparent calc(50% + 1px)
+	);
+
+}`
