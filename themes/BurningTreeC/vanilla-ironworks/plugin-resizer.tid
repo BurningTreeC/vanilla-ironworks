@@ -28,13 +28,18 @@ code-body: yes
 **
 ** One thing this sheet deliberately does NOT do is fight the plugin over the
 ** story river. The plugin ships a block of Vanilla-shaped geometry — an
-** !important margin-right on the river among it — which would override the
-** margin layout.tid animates and freeze the slide. Core ships
-** $:/config/BTC/resizer/manage-sidebar-layout = no, which switches that block
-** off at source. Overriding it from here instead would have meant restating
-** the entire layout matrix (two modes x two sides x full-width, plus the
-** minimap's contribution to each) at !important, in a second place, where it
-** would drift out of step with layout.tid the first time either changed.
+** !important margin-right on the river among it — which overrides the margin
+** the layout animates and freezes the river in place while the sidebar slides.
+** Overriding that from here would have meant restating the entire layout matrix
+** (two modes x two sides x full-width, plus the minimap's contribution to each)
+** at !important, in a second place, where it would drift out of step with the
+** layout sheet the first time either changed.
+**
+** Instead every theme here carries `manages-sidebar-layout: yes` in its
+** plugin.info, and the plugin skips that block while such a theme is active.
+** A field rather than a config tiddler, because the damage is invisible at
+** rest — the resting margin is identical either way, and only the transition
+** breaks — so anything switchable would eventually get switched.
 ** ========================================================================== */
 
 /*
@@ -344,6 +349,43 @@ body.tc-resizing .tc-story-river .tc-tiddler-frame {
 .tc-tiddler-editor-resizer.tc-resizer-active {
 	background-color: transparent;
 	opacity: 1;
+}
+
+/*
+** The land.
+**
+** The cut line says where the plates meet. It does not say you can move them,
+** and six pixels of hit area with a one-pixel mark on it gives the eye nothing
+** to aim for.
+**
+** A joint that is meant to be worked gets a raised land at the point of
+** purchase — thicker stock, machined proud, so a hand or a tool has something
+** to bear on. That is what this is: the same cut edge, three pixels wide for
+** the height of a grip, carrying the same lit-above and shade-below pair every
+** raised face in this theme carries. It is a machining feature rather than a
+** handle, which is the whole difference between this theme and a costume.
+*/
+.tc-sidebar-resizer::after,
+.tc-tiddler-editor-resizer::after {
+	content: "";
+	position: absolute;
+	inset-block-start: 50%;
+	inset-inline-start: 50%;
+	translate: -50% -50%;
+	inline-size: 3px;
+	block-size: 44px;
+	background: color-mix(in oklch, var(--tpc-foreground) 26%, var(--tpc-page-background));
+	box-shadow:
+		inset 0 1px 0 var(--iw-lit),
+		inset 0 -1px 0 var(--iw-shade);
+	transition: background-color var(--btc-dur) var(--btc-ease);
+}
+
+.tc-sidebar-resizer:hover::after,
+.tc-sidebar-resizer.tc-resizer-active::after,
+.tc-tiddler-editor-resizer:hover::after,
+.tc-tiddler-editor-resizer.tc-resizer-active::after {
+	background: var(--iw-oxide);
 }
 
 </$list>
