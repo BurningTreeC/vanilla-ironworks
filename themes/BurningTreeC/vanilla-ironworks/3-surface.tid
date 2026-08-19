@@ -1,0 +1,3013 @@
+title: $:/themes/BurningTreeC/vanilla-ironworks/3-surface
+tags: [[$:/tags/Stylesheet]]
+code-body: yes
+
+\rules only filteredtranscludeinline transcludeinline macrodef macrocallinline
+
+/* Hallmark · theme: Ironworks · genre: editorial (industrial register) · tone: raw / utilitarian
+ * pre-emit critique: P5 H5 E5 S5 R5 V5
+ * states: default · hover · focus · active · disabled · loading · error · success
+ * contrast: pass
+ *
+ * ============================================================================
+ * IRONWORKS — BASE
+ * ============================================================================
+ *
+ * A standalone theme. It does NOT depend on vanilla and does not inherit a
+ * single rule from it; vanilla was read as a reference for which class names
+ * TiddlyWiki actually emits, and nothing more.
+ *
+ * What this theme is
+ * ------------------
+ * A machine shop, not a museum of one. The steampunk is read off MATERIALS and
+ * MACHINING, never off props: there is not one cog, gear, brass gradient,
+ * scrollwork frame or leather panel anywhere in this file, and there will not
+ * be. Those are costume. What is here instead is the behaviour of worked metal:
+ * a cut edge catches light along its top and throws a hard shadow off its
+ * bottom, a rolled sheet keeps the grain of the rollers, and the exposed edge
+ * of an iron plate oxidises before the middle of it does.
+ *
+ * Colour discipline
+ * -----------------
+ * There is not one hardcoded colour in this file. Every colour resolves from
+ * `--tpc-*`, the custom properties the core generates from the active palette
+ * in core/stylesheets/custom-properties.tid — which PageStylesheet transcludes
+ * before any theme stylesheet, so they are always in scope. Everything else is
+ * derived from those with color-mix() in OKLCH.
+ *
+ * The practical payoff: this theme re-tints itself correctly under ANY
+ * palette, including ones that did not exist when it was written. Switch to
+ * Nord or Solarized and the rules, oxidation and washes all follow. The two
+ * palettes it ships with — Ironworks Nightshift and Ironworks Dayshift — are
+ * the shop after dark and the shop by daylight.
+ *
+ * Light and shade are the one thing a palette cannot supply, because a palette
+ * has no idea which way is up. Those come from `light-dark()` against the
+ * palette's own declared `color-scheme`, so the light catch stays a highlight
+ * on a dark palette and a sheen on a light one rather than inverting into a
+ * smear. See --iw-lit / --iw-shade below.
+ *
+ * The ironworks, four moves only
+ * ------------------------------
+ *   1. Tiddlers are PLATES. Nothing is rounded — a plate is cut, not moulded.
+ *      One hairline machined edge, a light catch along the top of it, and a
+ *      hard 2px shadow underneath that reads as the thickness of the metal
+ *      rather than as a floating card.
+ *   2. Every plate wears a PATINA: craquelure where the finish let go, dust
+ *      in the grain, rust blooming through in patches. Four background layers
+ *      on the frame itself, pitched at the edge of visibility — the test is
+ *      not whether you can see it but whether you can read a paragraph without
+ *      noticing it. It replaced a rust band down the leading edge, which said
+ *      the same thing far louder and put it in the same column on every single
+ *      tiddler.
+ *   3. The editor is DRAFTING STOCK. Scribe lines locked to the editor's own
+ *      line-height with `background-attachment: local`, so text sits ON the
+ *      scribe and the scribe scrolls with it. Faint — felt under a paragraph,
+ *      not counted through one. No graduations: see the note on --iw-scribe-ink
+ *      for why a mark on the nth visual row of a wrapping editor measures
+ *      nothing.
+ *   4. The interface is PUNK. Every floating layer throws a hard block of ink
+ *      a few pixels off-register instead of a blurred shadow, the way a
+ *      two-colour print lands when the press will not hold registration.
+ *      Hazard tape goes on the two things worth taping off — a drop target and
+ *      an open, unsaved plate. A title that names nothing is struck through in
+ *      oxide. See the token block for the two properties that carry all of it.
+ *
+ * The ground stays FLAT. It was textured once — grit and craquelure off a pair
+ * of SVG noise tiles — and it was wrong: a corroded floor competes with the
+ * plates lying on it, and the one surface a reader's eye has to rest between
+ * is the one that should hold still. The rolling grain on the sidebar is all
+ * the surface texture the theme keeps, and the plates themselves are clean.
+ *
+ * Type is stamped, not set. Titles and labels take a condensed grotesque —
+ * the lettering of a maker's plate — with labels in uppercase and tracked out;
+ * running text takes an Egyptian slab, which is what the industrial press
+ * actually printed with. All display is roman. No italic headings.
+ *
+ * Restraint is the point. Four moves, and the ornament budget is spent. There
+ * is no gear, no cog, no brass, no scrollwork and no rivet anywhere in this
+ * file — every one of those would be a picture OF a machine instead of the
+ * behaviour of one.
+ * ============================================================================
+ */
+
+/* ==========================================================================
+** Derived tokens
+** ========================================================================== */
+
+:root {
+
+	--btc-font-body: {{$:/themes/BurningTreeC/vanilla-ironworks/settings/fontfamily}};
+	--btc-font-ui: {{$:/themes/BurningTreeC/vanilla-ironworks/settings/uifontfamily}};
+	--iw-font-plate: {{$:/themes/BurningTreeC/vanilla-ironworks/settings/platefontfamily}};
+	--btc-font-code: {{$:/themes/BurningTreeC/vanilla-ironworks/settings/codefontfamily}};
+
+	--btc-size: {{$:/themes/BurningTreeC/vanilla-ironworks/metrics/fontsize}};
+	--btc-lh: {{$:/themes/BurningTreeC/vanilla-ironworks/metrics/lineheight}};
+	--iw-body-size: {{$:/themes/BurningTreeC/vanilla-ironworks/metrics/bodyfontsize}};
+	--iw-body-lh: {{$:/themes/BurningTreeC/vanilla-ironworks/metrics/bodylineheight}};
+	--iw-plate-margin: {{$:/themes/BurningTreeC/vanilla-ironworks/metrics/platemargin}};
+
+	/* A 4pt spacing scale */
+	--btc-space-2xs: 4px;
+	--btc-space-xs: 8px;
+	--btc-space-sm: 12px;
+	--btc-space-md: 16px;
+	--btc-space-lg: 24px;
+	--btc-space-xl: 32px;
+	--btc-space-2xl: 48px;
+
+	/*
+	** Zero, everywhere, and it is a decision rather than an omission.
+	**
+	** A radius is a moulding artefact: it is what you get when a shape is cast
+	** or pressed. Everything in this theme is cut from stock, and a cut edge is
+	** square. The tokens are kept — the rest of the file references them, and a
+	** user who wants softened corners can override these two properties in
+	** $:/themes/BurningTreeC/vanilla-ironworks/... and have the whole theme
+	** follow rather than hunting individual rules.
+	*/
+	--btc-radius: 0px;
+	--btc-radius-lg: 0px;
+
+	/*
+	** Distance from the top of the story river to the top of the first
+	** tiddler's title: the river's own gutter, the plate's hairline edge, then
+	** the plate's padding. The sidebar header reuses it so the site title lands
+	** on exactly the same line. Derived rather than hardcoded, so it survives a
+	** change to the gutter or the plate padding.
+	*/
+	--iw-title-offset: calc(var(--btc-gutter) + 1px + var(--btc-space-lg));
+
+	/*
+	** Tiddler title size, as a token because two separate elements need it.
+	** The icon span is a SIBLING of the h2, not a child (see
+	** core/ui/ViewTemplate/title.tid) — both sit inside the link. So an icon
+	** sized in `em` resolves against .tc-titlebar's font-size, not the title's,
+	** and ends up at body size next to a 1.75rem heading: small, and sitting
+	** on the wrong optical line. Vanilla avoids this by putting the title size
+	** on .tc-titlebar itself; Ironworks keeps the size on .tc-title and shares
+	** the value through this token instead.
+	**
+	** Set a rung higher than a normal-width face would take, because the plate
+	** face is condensed: at equal point size it occupies roughly 12% less width
+	** and reads optically smaller.
+	*/
+	--btc-title-size: 1.875rem;
+
+	/* How far the title icon rides above the first line's centre. 0 = exact
+	   centre; larger raises it toward the cap line. */
+	--btc-title-icon-nudge: 0.08em;
+
+	/*
+	** The stamped label. Every uppercase label in the theme — tags, tabs,
+	** buttons, subtitles, section heads, sidebar headings — is tracked out by
+	** this one value, so the whole interface stays struck by the same die.
+	** Uppercase without added tracking sets tight and reads as shouting; this
+	** is the difference between a stamped maker's plate and a caps-lock key.
+	*/
+	--iw-label-tracking: 0.08em;
+
+	/* Width of the plate's inline-start gutter on a phone, sized as a tap
+	   target for the fold banner that lives in it. */
+	--btc-fold-gutter: 28px;
+
+	/* Ink, mixed in OKLCH so the steps stay perceptually even on any palette */
+	--btc-ink-soft: color-mix(in oklch, var(--tpc-foreground) 72%, var(--tpc-background));
+	--btc-ink-faint: color-mix(in oklch, var(--tpc-foreground) 45%, var(--tpc-background));
+
+	--btc-rule: color-mix(in oklch, var(--tpc-foreground) 18%, var(--tpc-background));
+	--btc-rule-faint: color-mix(in oklch, var(--tpc-foreground) 10%, var(--tpc-background));
+
+	/* The machined edge of a plate. A shade harder than a printed page's
+	   edge would be, because metal ends where it ends. */
+	--iw-plate-edge: color-mix(in oklch, var(--tpc-foreground) 22%, var(--tpc-background));
+
+	/*
+	** Light and shade — the only two values in the theme that are NOT derived
+	** from the palette, and they cannot be.
+	**
+	** A palette knows its colours; it does not know which direction light comes
+	** from. Deriving a highlight by mixing toward the foreground works on a dark
+	** palette and inverts on a light one, where the foreground IS the dark. So
+	** these resolve through light-dark() against the palette's own declared
+	** color-scheme (set on this same block, below): white above, black below,
+	** at strengths that suit each scheme.
+	**
+	** On a light scheme the sheen is nearly pure white and the shade is soft,
+	** the way daylight falls on canvas and oiled steel. On a dark scheme the
+	** highlight drops to a whisper — a single lamp in a dark shop only just
+	** catches an edge — and the shade goes deep.
+	*/
+	--iw-lit: light-dark(rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.07));
+	--iw-shade: light-dark(rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0.55));
+
+	--btc-shadow: color-mix(in srgb, var(--tpc-foreground) 16%, transparent);
+	--btc-shadow-soft: color-mix(in srgb, var(--tpc-foreground) 8%, transparent);
+
+	/*
+	** Oxidation. Derived from the palette's primary rather than from a
+	** hardcoded rust, so the corrosion re-tints with everything else — on both
+	** shipped palettes the primary IS rust, and on a foreign palette it stays
+	** the accent it was given rather than fighting it.
+	**
+	** --iw-oxide is the solid mark: the bar down a blockquote, the strike
+	** through a title that names nothing, the hazard tape on an open plate.
+	** --iw-oxide-stain is a WASH, mixed with `transparent` rather than with a
+	** background colour, because it sits ON a plate and has to let the plate
+	** through — and a plate is not always the same colour underneath. An
+	** editing plate and an info panel are both different.
+	**
+	** The wash needs MORE of the accent on a light palette than on a dark one
+	** to read as the same amount of rust: on soot, a 14% wash is already among
+	** the brightest things on the plate; on canvas the same wash is a pale pink
+	** smear. The strength therefore comes from the palette's own color-scheme
+	** field, read here at stylesheet-render time.
+	**
+	** light-dark() cannot do this job — it resolves to a <color>, and what
+	** varies here is a <percentage> inside color-mix(). It is also the wrong
+	** question: light-dark() answers "which scheme is the OS in", and the
+	** palette is free to disagree with the OS.
+	*/
+	--iw-oxide-stain-strength: {{{ [{$:/palette}get[color-scheme]match[dark]then[13%]] ~[[20%]] }}};
+
+	--iw-oxide: color-mix(in oklch, var(--tpc-primary) 82%, var(--tpc-foreground));
+	--iw-oxide-stain: color-mix(in srgb, var(--tpc-primary) var(--iw-oxide-stain-strength), transparent);
+
+	/*
+	** ---- The patina ----------------------------------------------------
+	**
+	** The surface of a plate that has been in the shop a while: craquelure
+	** where the finish has dried out and let go, dust in the grain, and rust
+	** blooming through in patches. Four background layers on the tiddler
+	** frame itself, painted over the plate colour and under everything else —
+	** backgrounds paint below content, always, so no amount of texture can get
+	** between a reader and the text.
+	**
+	** This replaced an oxidised leading edge: a rust band in the plate's
+	** margin, bleeding inward. That said "this plate rusts at the edge", which
+	** is true of metal but put the loudest thing in the theme in the same
+	** column on every single tiddler, and read as decoration the moment there
+	** were three of them on screen. Corrosion over the whole face says the same
+	** thing more quietly and never lines up twice.
+	**
+	** The margin it lived in STAYS. It was never the rust's margin — it is the
+	** plate's, and collapsing it now would re-flow every tiddler in the wiki to
+	** save a band of empty metal.
+	**
+	** The two tiles are ACHROMATIC on purpose, and that is what keeps them
+	** inside this theme's colour discipline: a data URI cannot read a custom
+	** property, so a tinted tile would be the one hardcoded colour in the file
+	** and would fight every palette it was not drawn for. Grain is luminance,
+	** not hue — the tiles supply structure, the stains underneath supply the
+	** rust. Swap the palette and the plate re-rusts; the dust stays dust.
+	**
+	** Tile sizes are mutually awkward — 260, 720, 940x780, 1180x1020, 700x1340
+	** — so the five layers never come back into phase inside any tiddler anyone
+	** will write, and no two plates in a river wear the same way.
+	**
+	** Both filters pin their region with `filterUnits='userSpaceOnUse'` and an
+	** explicit x/y/width/height, and without it `stitchTiles='stitch'` does not
+	** do what it says. Stitching seams the noise across the FILTER REGION, and
+	** that region defaults to -10%,-10%,120%,120% of the object's bounding box
+	** — 10% wider than the tile on each side. So the noise stitched at a period
+	** the tile did not have, and a wide plate showed a hard vertical line every
+	** 720px where one tile met the next. Pinning the region to the tile makes
+	** the stitch period and the tile the same thing.
+	**
+	** Alphas are deliberately at the edge of visibility. The test is not "can I
+	** see the texture" but "can I read a paragraph without noticing it".
+	*/
+	--iw-crackle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='720' height='720'%3E%3Cfilter id='c' filterUnits='userSpaceOnUse' x='0' y='0' width='720' height='720'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.035' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 1 0'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='720' height='720' filter='url(%23c)' opacity='{{{ [{$:/palette}get[color-scheme]match[dark]then[0.075]] ~[[0.085]] }}}'/%3E%3C/svg%3E");
+
+	--iw-dust: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='d' filterUnits='userSpaceOnUse' x='0' y='0' width='260' height='260'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23d)' opacity='{{{ [{$:/palette}get[color-scheme]match[dark]then[0.045]] ~[[0.04]] }}}'/%3E%3C/svg%3E");
+
+	/*
+	** The opacities are transcluded INTO the tiles rather than applied in CSS,
+	** and there is no way around it: a data URI is an opaque image to CSS, so a
+	** custom property cannot reach inside one. Baking the number in at
+	** stylesheet-render time is the only way to have the same two tiles serve
+	** both schemes — and it re-renders when the palette changes, because the
+	** transclusion is a dependency like any other.
+	*/
+
+	/*
+	** Every stain must reach FULLY TRANSPARENT before its tile's edge, and this
+	** is the whole of what makes a repeated wash invisible. The first version
+	** of these two put the bloom near a corner with a radius wider than the
+	** room it had — so the gradient was still tinted where the tile ended, the
+	** next tile started at nothing, and a wide plate showed a hard vertical
+	** line every 940px. It reads exactly like the tiling seam the noise tiles
+	** had, and it is a different bug with a different fix.
+	**
+	** The arithmetic to check, per axis: |centre ± transparent-stop x radius|
+	** must lie inside the tile. Radii are percentages OF THE TILE, so shrinking
+	** the tile without shrinking the radius does not help.
+	**
+	** Three of them now rather than two, at three tile sizes, because a bloom
+	** that has to sit clear of its own edges is necessarily smaller — and three
+	** smaller ones scattered across three periods read less like a grid than
+	** two big ones on two.
+	*/
+	--iw-patina:
+		var(--iw-dust),
+		var(--iw-crackle),
+		radial-gradient(40% 36% at 46% 48%, var(--iw-oxide-stain), transparent 80%),
+		radial-gradient(38% 34% at 56% 54%, var(--iw-oxide-stain), transparent 80%),
+		radial-gradient(30% 40% at 62% 38%, var(--iw-oxide-stain), transparent 82%);
+	--iw-patina-size: 260px 260px, 720px 720px, 940px 780px, 1180px 1020px, 700px 1340px;
+
+	/*
+	** Rolling grain. A sheet that came off a mill keeps the direction it was
+	** rolled in, and that is the whole of this texture: one lit hairline and
+	** one shaded one every 4px, running with the panel.
+	**
+	** It has its OWN strengths rather than reusing --iw-lit / --iw-shade,
+	** which are tuned for a 1px edge on a small element. At panel scale those
+	** same values read as corduroy. Grain is meant to be felt at arm's length
+	** and invisible at reading distance; if you can count the lines, it is
+	** wrong. The 4px pitch is deliberate too — a 2px or 3px pitch beats against
+	** the pixel grid on fractional-DPI displays and shimmers while scrolling.
+	**
+	** It goes on the chassis only — sidebar and menubar. Never on a plate:
+	** vertical hairlines under running text is noise, and the reading surface
+	** is the one place this theme keeps completely flat.
+	*/
+	--iw-grain-lit: light-dark(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
+	--iw-grain-shade: light-dark(rgba(0, 0, 0, 0.028), rgba(0, 0, 0, 0.16));
+	/*
+	** Two tokens, one per direction, and NOT one token reading an angle
+	** variable — which is what this was first, and it silently did nothing.
+	**
+	** A custom property's value is substituted when it is COMPUTED, not when
+	** it is used: `--iw-grain` is computed once on :root with whatever
+	** --iw-grain-angle says there, and every descendant inherits that already
+	** substituted value. Overriding the angle further down the tree cannot
+	** reach back into it. The menubar kept drawing vertical hairlines while the
+	** stylesheet said 0deg, and nothing in devtools looked wrong.
+	**
+	** So: 90deg draws the hairlines vertically, which is right for a tall
+	** panel; 0deg draws them along a bar that is long the other way.
+	*/
+	--iw-grain: repeating-linear-gradient(
+		90deg,
+		var(--iw-grain-lit) 0 1px,
+		transparent 1px 2px,
+		var(--iw-grain-shade) 2px 3px,
+		transparent 3px 4px
+	);
+
+	--iw-grain-along: repeating-linear-gradient(
+		0deg,
+		var(--iw-grain-lit) 0 1px,
+		transparent 1px 2px,
+		var(--iw-grain-shade) 2px 3px,
+		transparent 3px 4px
+	);
+
+	/*
+	** Gradient direction, as an angle, because gradients have no logical
+	** keywords: `to right` is physical and would send the oxide bleed the wrong
+	** way in an RTL wiki. Flipped for RTL a few rules down, the same way
+	** layout.tid flips --btc-dir.
+	*/
+	--iw-bleed-angle: 90deg;
+
+	/*
+	** The editor's leading.
+	**
+	** Declared here, once, because four editors have to agree on it: the plain
+	** textarea, the framed textarea, CodeMirror 5 and CodeMirror 6. A wiki can
+	** switch between them the moment a plugin is installed, and an editor that
+	** changed its line spacing when that happened would be a strange thing to
+	** ship.
+	**
+	** An editor that genuinely needs a different leading has to restate the
+	** ruling as well as this number: a custom property is substituted when it
+	** is computed, so --iw-scribe below bakes in whatever --iw-edit-lh says at
+	** :root and inherits that value already resolved. Overriding the leading
+	** further down the tree moves the text and leaves the ruling behind.
+	*/
+	--iw-edit-lh: 26px;
+
+	/*
+	** The ruling drawn on that rhythm. One line per row of text, and nothing
+	** else: there was a graduated tick down the leading edge for a while, and
+	** it is not coming back. An editor WRAPS, so a mark on the nth visual row
+	** measures nothing — it moves when the panel is resized and counts one
+	** wrapped sentence as several. The scribe makes no such claim: it is the
+	** pitch of the text made visible, and it lands on every visual row by
+	** definition.
+	**
+	** Drawn at 9% of the foreground, about half the strength it started at. At
+	** the density of real wiki text — long wrapped lines, monospace, top to
+	** bottom — the old value stopped being ruled stock and turned into a table.
+	** This is the knob if it wants tuning.
+	*/
+	--iw-scribe-ink: color-mix(in oklch, var(--tpc-foreground) 9%, var(--tpc-tiddler-editor-background));
+
+	--iw-scribe: repeating-linear-gradient(
+		to bottom,
+		transparent 0,
+		transparent calc(var(--iw-edit-lh) - 1px),
+		var(--iw-scribe-ink) calc(var(--iw-edit-lh) - 1px),
+		var(--iw-scribe-ink) var(--iw-edit-lh)
+	);
+
+	/*
+	** ---- Fasteners ------------------------------------------------------
+	**
+	** Four screws, one in each corner of a plate, drawn entirely in CSS: no
+	** image, no icon font, no markup. Each is two background layers — the head
+	** and the slot — on a pseudo-element that covers the frame.
+	**
+	** What keeps this a fastener rather than a prop is that it behaves like
+	** one. The head is lit from the top left, the same direction --iw-lit
+	** lights every other edge in the theme, so a screw sits under the same lamp
+	** as the plate it holds. The slots are DRIVEN, not scattered: horizontal on
+	** one diagonal, vertical on the other. Randomised slot angles are what a
+	** decorator does; a matched pair on each diagonal is what you get when
+	** somebody torqued all four down in a sequence.
+	**
+	** They are inset far enough to sit in the plate's own padding, so they
+	** never come near text, and the pseudo-element is `pointer-events: none`
+	** so it cannot swallow a click on a toolbar button underneath it.
+	**
+	** Sizes are in px rather than em on purpose: a screw is a part, and a part
+	** does not get bigger because the text around it did.
+	*/
+	--iw-screw-size: 16px;
+	--iw-screw-inset: 11px;
+
+	/* The slot is drawn in its own, smaller box centred on the head, so the
+	   groove cannot reach past the rim at any angle. 0.6 of the head keeps the
+	   arms inside the disc even on the diagonal, where a square box is widest. */
+	/*
+	** Only the FACE is a palette colour. The catch, the rim and the slot are
+	** light and shade, and they have to be: a slot is a recess, so it is darker
+	** than the face on every palette — derive it by mixing toward the
+	** foreground and it comes out LIGHTER than the head on any dark palette,
+	** which is a screw lit from inside its own slot. Same for the rim: a
+	** countersink is a shadow, not an accent.
+	**
+	** --iw-screw-wall is the far wall of the groove, the one the light reaches
+	** over the near edge. It is what stops the slot reading as a painted line:
+	** a real groove is dark on one side and bright on the other, and that pair
+	** is most of what the eye uses to decide something is cut rather than
+	** printed.
+	**
+	** The face strength comes from the palette's scheme for the same reason the
+	** oxide wash does: a steel head on soot has to be clearly LIGHTER than the
+	** plate for a dark groove to show in it at all, while on canvas the same
+	** head reads as a slightly darker disc. One value cannot do both.
+	*/
+	--iw-screw-face-strength: {{{ [{$:/palette}get[color-scheme]match[dark]then[34%]] ~[[24%]] }}};
+	--iw-screw-face: color-mix(in oklch, var(--tpc-foreground) var(--iw-screw-face-strength), var(--tpc-tiddler-background));
+	--iw-screw-catch: light-dark(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.17));
+	--iw-screw-rim: light-dark(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5));
+	--iw-screw-slot-ink: light-dark(rgba(0, 0, 0, 0.46), rgba(0, 0, 0, 0.6));
+	--iw-screw-wall: light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.2));
+
+	/*
+	** The head is TWO layers, and the first attempt at one was a good lesson.
+	**
+	** Putting the gradient's origin off-centre lights the face from the top
+	** left in a single layer — but `at` moves the CIRCLE, not just the light,
+	** so the disc itself shifted up and left inside its box while the slot
+	** stayed centred in its own. The groove came out crossing the head off
+	** its middle and poking through the rim on one side: an artefact that
+	** reads as a rendering bug rather than as a screw.
+	**
+	** So the disc is concentric — face, then the rim where the head meets the
+	** countersink, then a transparent last stop so it has no square edges — and
+	** the light is a separate small gleam laid over it, up and to the left,
+	** which is where --iw-lit puts the light on every other edge in the theme.
+	*/
+	--iw-screw-head: radial-gradient(
+		calc(var(--iw-screw-size) / 2 - 1px) at 50% 50%,
+		var(--iw-screw-face) 0 68%,
+		var(--iw-screw-rim) 82% 94%,
+		transparent 96%
+	);
+
+	--iw-screw-gleam: radial-gradient(
+		calc(var(--iw-screw-size) * 0.26) at 36% 30%,
+		var(--iw-screw-catch) 0 26%,
+		transparent 76%
+	);
+
+	/*
+	** The slot: a parallel-sided groove, cut to the rim, at an arbitrary angle.
+	**
+	** This was a conic gradient first, and the geometry gave it away. A conic
+	** arm is a WEDGE — its width is 2r·tan(θ/2), which is zero at the centre
+	** and widest at the rim. A slot is milled by a cutter of one width, so it
+	** is the same width all the way across; the conic version pinched to
+	** nothing in the middle and splayed at the edges, which is the shape of a
+	** bow tie, not a groove.
+	**
+	** A linear gradient gives parallel sides at any angle, but it fills its
+	** whole box, so the stripe would run out past the head as a straight bar
+	** across the plate. The fix is to stop clipping with geometry and clip with
+	** a MASK instead: the pseudo-element carries four circular mask layers, one
+	** per screw, so every layer on it — heads, gleams and stripes alike — is
+	** cut to the discs. The stripe then ends exactly at the rim, on the round,
+	** whatever angle it is at.
+	**
+	** The band is measured in px from the 50% midpoint rather than in
+	** percentages, and that is not fussiness: the gradient line of a linear
+	** gradient in a square box is W(|sin θ| + |cos θ|) long, which swings by
+	** 41% between an axis-aligned angle and a diagonal one. Percentage stops
+	** would have made every diagonal screw's slot noticeably fatter than every
+	** upright one.
+	**
+	** The direction is the slot angle plus 90°, because the gradient runs
+	** ACROSS the groove while the groove runs along the angle it was dealt.
+	**
+	** Four tokens rather than one, because all four screws live in ONE
+	** element's background list and a custom property has a single value per
+	** element: there is nowhere to vary a shared token per layer.
+	*/
+
+	/* One mask layer per screw, the same box and the same radius as the head,
+	   so the disc is what every layer is cut to. */
+	--iw-screw-mask: radial-gradient(
+		calc(var(--iw-screw-size) / 2 - 1px) at 50% 50%,
+		#000 0 93%,
+		transparent 97%
+	);
+
+	/*
+	** ---- The punk half -------------------------------------------------
+	**
+	** Steam is the machining. Punk is what a shop that does not ask permission
+	** does with it: two-colour printing run on a machine that will not hold
+	** registration, hazard tape where something is not finished, and a marker
+	** through anything that is wrong.
+	**
+	** Both of these are ONE decision each, spent in a lot of places, which is
+	** what keeps this a voice rather than a pile of effects.
+	*/
+
+	/*
+	** Misregistration. Every floating layer in the theme throws a HARD block
+	** of ink at this offset instead of a blurred drop shadow — the second pass
+	** of a two-colour print landing a few millimetres off the first. Blur is
+	** what a shadow does in daylight; this is what a cheap press does.
+	**
+	** The x offset is signed by --btc-dir so the plates slip toward the trailing
+	** edge in an RTL wiki as well, rather than back over the text.
+	*/
+	--iw-misprint: 4px;
+	--iw-misprint-x: calc(var(--btc-dir, 1) * var(--iw-misprint));
+
+	/*
+	** Hazard tape, for the two things worth taping off: a drop target, and a
+	** plate that is open and unsaved. The stripe colour is a variable the
+	** CONSUMER sets — --iw-hazard-ink — because drag is green by palette
+	** convention and an unsaved draft is not. One pattern, two meanings, no
+	** second gradient.
+	*/
+	--iw-hazard-ink: var(--iw-oxide);
+	--iw-hazard: repeating-linear-gradient(
+		45deg,
+		var(--iw-hazard-ink) 0 6px,
+		transparent 6px 12px
+	);
+
+	--iw-accent: var(--tpc-primary);
+	--btc-accent-wash: color-mix(in oklch, var(--tpc-primary) 14%, var(--tpc-background));
+	--btc-accent-edge: color-mix(in oklch, var(--tpc-primary) 45%, var(--tpc-background));
+
+	--btc-focus: var(--tpc-primary);
+
+	/*
+	** Drag and drop has its own colour, and it is NOT the accent.
+	** `dropzone-background` is a standard palette entry and every palette in
+	** the wild sets it green, including core Vanilla - green-for-drop is the
+	** convention, not an Ironworks decision. Deriving the drag language from the
+	** accent instead would have this theme fighting whatever palette is loaded,
+	** and on both shipped palettes it would have painted the drop target in the
+	** same rust as the corrosion it is meant to be distinguishable from.
+	*/
+	--btc-drop: var(--tpc-dropzone-background);
+
+	/* The active palette's own color-scheme field, which is what the core reads
+	   too (core/modules/editor/engines/framed.js), and what light-dark()
+	   resolves --iw-lit and --iw-shade against. Palettes that omit it fall
+	   back to `light dark` so form controls still adapt rather than being left
+	   with no scheme at all - an empty value here would make the whole
+	   declaration invalid. */
+	color-scheme: {{{ [{$:/palette}get[color-scheme]] ~[[light dark]] }}};
+	accent-color: var(--tpc-primary);
+}
+
+html[dir="rtl"] {
+	--iw-bleed-angle: 270deg;
+}
+
+@supports selector(:dir(rtl)) {
+	:root:dir(rtl) {
+		--iw-bleed-angle: 270deg;
+	}
+}
+
+/* Graceful degradation for engines without color-mix(). Everything stays
+   legible; it just loses the perceptual mixing. */
+@supports not (color: color-mix(in oklch, red, blue)) {
+	:root {
+		--btc-ink-soft: var(--tpc-foreground);
+		--btc-ink-faint: var(--tpc-muted-foreground);
+		--btc-rule: var(--tpc-tiddler-border);
+		--btc-rule-faint: var(--tpc-tiddler-border);
+		--iw-plate-edge: var(--tpc-tiddler-border);
+		--btc-shadow: rgba(0, 0, 0, 0.16);
+		--btc-shadow-soft: rgba(0, 0, 0, 0.08);
+		--btc-accent-wash: var(--tpc-message-background);
+		--btc-accent-edge: var(--tpc-primary);
+		--iw-oxide: var(--tpc-primary);
+		--iw-oxide-stain: transparent;
+	}
+}
+
+/* Engines without light-dark() get a fixed lighting direction rather than none:
+   a white top edge and a black bottom one, at strengths that survive on either
+   scheme. The plate keeps its thickness; it just stops being tuned. */
+@supports not (color: light-dark(#000, #fff)) {
+	:root {
+		--iw-lit: rgba(255, 255, 255, 0.16);
+		--iw-shade: rgba(0, 0, 0, 0.32);
+	}
+}
+
+/* ==========================================================================
+** The plate — story river and tiddler frames
+** ========================================================================== */
+
+.tc-story-river {
+	container-type: inline-size;
+	container-name: river;
+}
+
+.tc-tiddler-frame {
+	position: relative;
+
+	/*
+	** Published so descendants can track the sheet instead of re-deriving its
+	** geometry and drifting out of step with it. The unfold banner is the
+	** consumer: it is pinned to the sheet's inner bottom edge, so it needs the
+	** sheet's corner radius, and both change at narrow widths.
+	*/
+	--btc-frame-radius: var(--btc-radius);
+
+	/*
+	** The plate's inline-start gutter, and it is UNCONDITIONAL.
+	**
+	** It is wider than the other three sides because a plate has a margin, and
+	** the margin is the point. It held the corrosion once, back when the rust
+	** ran down the leading edge rather than across the face; the rust moved and
+	** the margin stayed, because it was never the rust's margin. Collapsing it
+	** now would change the measure of the text and re-flow every tiddler in the
+	** wiki to reclaim a band of bare metal.
+	**
+	** Published as a token because the sticky title strip has to span exactly
+	** the same distance, and two copies of this calculation would drift.
+	*/
+	--iw-plate-pad-start: calc(var(--iw-plate-margin) + var(--btc-space-lg));
+
+	margin-block-end: var(--btc-space-lg);
+	padding: var(--btc-space-lg);
+	padding-inline-start: var(--iw-plate-pad-start);
+	background-color: var(--tpc-tiddler-background);
+	border: 1px solid var(--iw-plate-edge);
+	border-radius: var(--btc-radius);
+
+	/*
+	** MOVE 1 — the plate. Three shadow layers, each doing a physical job:
+	**
+	**   inset 0 1px 0   the light catch along the milled top edge. One pixel,
+	**                   inside the border, so it reads as the bevel where the
+	**                   cut meets the face rather than as a glow.
+	**   0 2px 0         a HARD throw with no blur: this is the thickness of
+	**                   the stock, not a shadow cast on the bench. Blurring it
+	**                   is what turns a plate back into a floating card.
+	**   0 12px 20px     one soft ambient, tucked in with a negative spread so
+	**                   it only shows below. The plate sits ON the bench.
+	*/
+	box-shadow:
+		inset 0 1px 0 var(--iw-lit),
+		0 2px 0 var(--iw-shade),
+		0 12px 20px -16px var(--btc-shadow);
+	transition: box-shadow 180ms var(--btc-ease-out);
+}
+
+/* Engaged: the ambient deepens and the plate lifts a millimetre off the bench.
+   The hard throw grows with it — thickness does not change, the gap does. */
+.tc-tiddler-frame:focus-within {
+	box-shadow:
+		inset 0 1px 0 var(--iw-lit),
+		0 3px 0 var(--iw-shade),
+		0 18px 30px -18px var(--btc-shadow);
+}
+
+/*
+** MOVE 2 — the patina.
+**
+** The plate's whole face is worn: craquelure where the finish let go, dust in
+** the grain, rust blooming through in patches. See the --iw-patina note in the
+** token block for what each layer is, why the two noise tiles are colourless,
+** and why the tile sizes are mutually awkward.
+**
+** Painted as BACKGROUND LAYERS on the frame itself, and the difference is not
+** cosmetic. A pseudo-element is a positioned box: it paints ABOVE the plate's
+** in-flow content, so texture drawn that way would sit over the text. Getting
+** it behind would need z-index: -1, which needs a stacking context on the
+** frame, which traps every dropdown a tiddler opens inside that frame and lets
+** the next tiddler paint over it. Backgrounds paint below content, always.
+**
+** No direction handling is needed here and that is a small mercy: the previous
+** version of this move was anchored to the leading edge, so every gradient and
+** every background-position had to be flipped for RTL by hand. A surface has
+** no leading edge.
+*/
+.iw-patina .tc-tiddler-frame {
+	background-image: var(--iw-patina);
+	background-size: var(--iw-patina-size);
+	background-repeat: repeat;
+}
+
+/*
+** The screws.
+**
+** On a pseudo-element rather than in the frame's own background list, and that
+** is a maintenance decision as much as a visual one: the patina already owns
+** that list, and combining two optional sets of layers on one property means
+** writing a rule for every combination of the two switches. A pseudo-element
+** keeps them independent — either can be turned off without touching the other.
+**
+** It paints above the plate's content, which is fine and in fact required: the
+** screws sit in the padding, clear of text, and a fastener that could be
+** covered by a paragraph would be a fastener behind the panel it is holding.
+** `pointer-events: none` keeps it from swallowing clicks on the toolbar.
+**
+** Eight layers: four slots first so they paint over their heads, then four
+** heads. Every layer is the same box; only the position changes.
+*/
+.iw-screws .tc-tiddler-frame::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+
+	/* Twelve layers, three per screw: the slot on top, the gleam under it, the
+	   head at the bottom. Every layer is the same box at the same four
+	   positions, which is what lets the sizes and positions below be four
+	   values repeated three times rather than twelve unrelated ones. */
+	background-image:
+		var(--iw-screw-slot-1),
+		var(--iw-screw-slot-2),
+		var(--iw-screw-slot-3),
+		var(--iw-screw-slot-4),
+		var(--iw-screw-gleam),
+		var(--iw-screw-gleam),
+		var(--iw-screw-gleam),
+		var(--iw-screw-gleam),
+		var(--iw-screw-head),
+		var(--iw-screw-head),
+		var(--iw-screw-head),
+		var(--iw-screw-head);
+	background-repeat: no-repeat;
+	background-size: var(--iw-screw-size) var(--iw-screw-size);
+	background-position:
+		var(--iw-screw-inset) var(--iw-screw-inset),
+		calc(100% - var(--iw-screw-inset)) var(--iw-screw-inset),
+		var(--iw-screw-inset) calc(100% - var(--iw-screw-inset)),
+		calc(100% - var(--iw-screw-inset)) calc(100% - var(--iw-screw-inset)),
+		var(--iw-screw-inset) var(--iw-screw-inset),
+		calc(100% - var(--iw-screw-inset)) var(--iw-screw-inset),
+		var(--iw-screw-inset) calc(100% - var(--iw-screw-inset)),
+		calc(100% - var(--iw-screw-inset)) calc(100% - var(--iw-screw-inset)),
+		var(--iw-screw-inset) var(--iw-screw-inset),
+		calc(100% - var(--iw-screw-inset)) var(--iw-screw-inset),
+		var(--iw-screw-inset) calc(100% - var(--iw-screw-inset)),
+		calc(100% - var(--iw-screw-inset)) calc(100% - var(--iw-screw-inset));
+
+	/*
+	** Four circular masks, one per screw, which is what cuts the slot stripes
+	** to the rim. Mask layers composite with `add` by default, so the four
+	** discs union rather than intersecting each other into nothing.
+	**
+	** The -webkit- pair is not cargo: Safari only dropped the prefix in 15.4,
+	** and an unprefixed-only mask there would clip nothing at all — which is
+	** the one failure mode that matters here, because unmasked stripes are
+	** bars straight across the plate rather than a missing detail.
+	*/
+	-webkit-mask-image:
+		var(--iw-screw-mask), var(--iw-screw-mask), var(--iw-screw-mask), var(--iw-screw-mask);
+	mask-image:
+		var(--iw-screw-mask), var(--iw-screw-mask), var(--iw-screw-mask), var(--iw-screw-mask);
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: var(--iw-screw-size) var(--iw-screw-size);
+	mask-size: var(--iw-screw-size) var(--iw-screw-size);
+	-webkit-mask-position:
+		var(--iw-screw-inset) var(--iw-screw-inset),
+		calc(100% - var(--iw-screw-inset)) var(--iw-screw-inset),
+		var(--iw-screw-inset) calc(100% - var(--iw-screw-inset)),
+		calc(100% - var(--iw-screw-inset)) calc(100% - var(--iw-screw-inset));
+	mask-position:
+		var(--iw-screw-inset) var(--iw-screw-inset),
+		calc(100% - var(--iw-screw-inset)) var(--iw-screw-inset),
+		var(--iw-screw-inset) calc(100% - var(--iw-screw-inset)),
+		calc(100% - var(--iw-screw-inset)) calc(100% - var(--iw-screw-inset));
+}
+
+/*
+** An open plate is taped off.
+**
+** Editing is the one state in a wiki that is genuinely unfinished — the text
+** is not saved, and anyone else looking at the screen should be able to tell
+** from across the room. Every other theme signals it with a slightly different
+** background; this one runs hazard tape along the top edge, because that is
+** what a workshop puts on something that is mid-job.
+**
+** Drawn as a pseudo-element rather than as a border-image, and that was not
+** the first attempt: `border-image` paints the stripe on the top edge fine,
+** but a border-image REPLACES border-style on every side it touches, so the
+** other three borders — including the rusted leading edge — disappeared with
+** it. `border-image-width: 5px 0 0 0` does not save it; the zero-width sides
+** simply draw nothing at all.
+**
+** The tape therefore sits inside the plate's padding box, above the title,
+** where it overlaps no text and costs no layout. The frame's own borders are
+** left alone.
+*/
+.tc-tiddler-frame.tc-tiddler-edit-frame {
+	background-color: var(--tpc-tiddler-editor-background);
+	border-color: var(--btc-accent-edge);
+}
+
+.tc-tiddler-frame.tc-tiddler-edit-frame::after {
+	content: "";
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline: 0;
+	block-size: 5px;
+	background-image: var(--iw-hazard);
+	pointer-events: none;
+}
+
+/*
+** Narrow river: the margin rule costs more than it gives, so it goes - and the
+** sheet's gutter goes with it, because `padding` here is a SHORTHAND that
+** resets the inline-start padding reserving that gutter.
+**
+** That matters beyond the stripe. The fold banner is absolutely positioned at
+** the padding edge, so the moment the gutter collapses it has nowhere to sit
+** and lands on the text. The fix therefore has to fire at exactly this width,
+** not at some separate viewport breakpoint - the two are the same event.
+**
+** So when the fold bar is enabled the sheet slides to the inline start by the
+** story river's own padding and takes that width with it. The sheet's width is
+** auto, so moving the start edge grows it by exactly that amount and the end
+** edge stays put; the reclaimed space pays for a gutter sized as a tap target.
+** Content ends up slightly WIDER than before, not narrower.
+**
+** Gated on .btc-fold-bar: with the fold/unfold bars switched off there is
+** nothing to reserve room for, and the sheet should keep its plain padding.
+*/
+@container river (max-width: 34rem) {
+
+	.tc-tiddler-frame {
+		--iw-plate-pad-start: var(--btc-space-md);
+		padding: var(--btc-space-md);
+		padding-inline-start: var(--iw-plate-pad-start);
+	}
+
+	/*
+	** Only the token is restated. `padding-inline-start` above reads it with
+	** var(), and var() resolves against the element's OWN computed value, so
+	** overriding the token here moves the padding with it - one source of
+	** truth for the gutter rather than two that can drift.
+	*/
+	.btc-fold-bar .tc-tiddler-frame {
+		--iw-plate-pad-start: var(--btc-fold-gutter);
+		margin-inline-start: calc(-0.5 * var(--btc-gutter));
+	}
+}
+
+/* ==========================================================================
+** Typography
+**
+** Three roles, and each one is doing a job the other two cannot:
+**
+**   plate   condensed grotesque. Titles, headings and every stamped label.
+**   body    an Egyptian slab. Running text, and only running text — this is
+**           the type the industrial press actually printed with, and it is
+**           the one face here chosen for reading rather than for marking.
+**   ui      the system sans. Interface prose: menus, notices, field labels,
+**           anything that is neither a mark nor a paragraph.
+**
+** Plus mono for code. The split is strict: if it is a label it is plate, if it
+** is a sentence you read it is body or ui, and nothing crosses over.
+** ========================================================================== */
+
+/*
+** If the plate stack falls through to a variable system face — which it will
+** on a machine with none of the named condensed families installed — borrow
+** that face's width axis so a label still comes out condensed rather than
+** merely uppercase. A static family without a condensed cut ignores this; no
+** browser synthesises width, so there is nothing to go wrong.
+*/
+:is(
+	.tc-title,
+	.tc-site-title,
+	.tc-subtitle,
+	.tc-tag-label,
+	.tc-tab-buttons button,
+	.tc-btn-boxed,
+	.tc-btn-rounded,
+	.tc-btn-mini,
+	.tc-btn-big-green,
+	.tc-primary-btn
+),
+:is(.tc-tiddler-body, .tc-tiddler-preview-preview) :is(h1, h2, h3, h4, h5, h6) {
+	font-stretch: 87.5%;
+}
+
+.tc-tiddler-body {
+	font-family: var(--btc-font-body);
+	font-size: var(--iw-body-size);
+	line-height: var(--iw-body-lh);
+	color: var(--tpc-foreground);
+	margin-block-start: var(--btc-space-md);
+	max-inline-size: 68ch;
+}
+
+:is(.tc-tiddler-body, .tc-tiddler-preview-preview) > * + * {
+	margin-block-start: var(--btc-space-md);
+}
+
+/*
+** The title is the maker's plate: condensed grotesque, heavy, set tight.
+**
+** Condensed is not a style choice borrowed from signage — it is what fits when
+** the surface is fixed and the lettering has to be legible across a shop. It
+** also buys back the width a long tiddler title needs before it wraps.
+**
+** Roman, always. An italic heading is the single most reliable tell that a
+** page was generated rather than designed, and a slanted maker's plate would
+** be a mis-stamped one.
+*/
+.tc-title {
+	font-family: var(--iw-font-plate);
+	font-size: var(--btc-title-size);
+	font-style: normal;
+	font-weight: 700;
+	line-height: 1.15;
+	letter-spacing: 0.004em;
+	color: var(--tpc-tiddler-title-foreground);
+	text-wrap: balance;
+	overflow-wrap: anywhere;
+	min-width: 0;
+}
+
+/* Stamped: the subtitle is a stock marking, not a sentence */
+.tc-subtitle {
+	font-family: var(--iw-font-plate);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: var(--iw-label-tracking);
+	text-transform: uppercase;
+	color: var(--tpc-tiddler-subtitle-foreground);
+	margin-block-start: var(--btc-space-2xs);
+	display: flex;
+	gap: var(--btc-space-2xs);
+	align-items: baseline;
+	flex-wrap: wrap;
+}
+
+/*
+** Headings inside the body stay on the plate face too, so a tiddler reads as
+** one stamped object with slab text set into it, rather than as two typefaces
+** taking turns.
+*/
+:is(.tc-tiddler-body, .tc-tiddler-preview-preview) :is(h1, h2, h3, h4, h5, h6) {
+	font-family: var(--iw-font-plate);
+	font-style: normal;
+	font-weight: 700;
+	line-height: 1.2;
+	letter-spacing: 0.004em;
+	color: var(--tpc-tiddler-title-foreground);
+	margin-block-start: var(--btc-space-xl);
+	text-wrap: balance;
+	overflow-wrap: anywhere;
+}
+
+:is(.tc-tiddler-body, .tc-tiddler-preview-preview) h1 { font-size: 1.625rem; }
+:is(.tc-tiddler-body, .tc-tiddler-preview-preview) h2 { font-size: 1.375rem; }
+:is(.tc-tiddler-body, .tc-tiddler-preview-preview) h3 { font-size: 1.1875rem; }
+:is(.tc-tiddler-body, .tc-tiddler-preview-preview) h4 { font-size: 1.0625rem; }
+
+/* The bottom two rungs stop being headings and become markings */
+:is(.tc-tiddler-body, .tc-tiddler-preview-preview) :is(h5, h6) {
+	font-size: 0.8125rem;
+	font-weight: 600;
+	letter-spacing: var(--iw-label-tracking);
+	text-transform: uppercase;
+	color: var(--btc-ink-faint);
+}
+
+/*
+** A scribed line under a section head — the machinist's mark, not a printer's
+** rule. It is drawn heavier at the leading edge and fades out, so it reads as
+** a scribe drawn in one pass rather than as a border.
+*/
+:is(.tc-tiddler-body, .tc-tiddler-preview-preview) h2 {
+	padding-block-end: var(--btc-space-2xs);
+	border-block-end: 1px solid transparent;
+	border-image: linear-gradient(
+		var(--iw-bleed-angle),
+		var(--iw-plate-edge) 0%,
+		var(--iw-plate-edge) 62%,
+		transparent 100%
+	) 1;
+}
+
+:is(.tc-tiddler-body, .tc-tiddler-preview-preview) blockquote {
+	margin-inline: 0;
+	padding-inline-start: var(--btc-space-md);
+	border-inline-start: 2px solid var(--iw-oxide);
+	color: var(--btc-ink-soft);
+}
+
+.tc-big-quote {
+	font-family: var(--btc-font-body);
+	font-size: 1.25rem;
+	font-style: normal;
+	line-height: 1.45;
+	color: var(--btc-ink-soft);
+}
+
+:is(.tc-tiddler-body, .tc-tiddler-preview-preview) :is(em, i) {
+	font-style: italic;
+}
+
+/*
+** A divider is a CUT, not a printed rule: dashes of uneven length with uneven
+** gaps, the way a line comes out when it is scored by hand rather than set.
+** One tile, 47px, repeated — the stops inside it are irregular, so the eye
+** reads a hand-drawn line rather than a dash pattern.
+*/
+:is(.tc-tiddler-body, .tc-tiddler-preview-preview) hr {
+	border: none;
+	block-size: 2px;
+	background-color: transparent;
+	background-image: linear-gradient(
+		90deg,
+		var(--btc-rule) 0 11px,
+		transparent 11px 14px,
+		var(--btc-rule) 14px 19px,
+		transparent 19px 21px,
+		var(--btc-rule) 21px 34px,
+		transparent 34px 38px,
+		var(--btc-rule) 38px 47px
+	);
+	background-size: 47px 2px;
+	background-repeat: repeat-x;
+	margin-block: var(--btc-space-xl);
+}
+
+.tc-muted {
+	color: var(--tpc-muted-foreground);
+}
+
+/* ==========================================================================
+** Links
+** ========================================================================== */
+
+.tc-tiddlylink {
+	color: var(--tpc-tiddler-link-foreground);
+	text-decoration: none;
+	text-underline-offset: 0.16em;
+	text-decoration-thickness: 1px;
+	border-radius: 2px;
+	transition: color 120ms var(--btc-ease-out);
+}
+
+:is(.tc-tiddler-body, .tc-tiddler-preview-preview) .tc-tiddlylink {
+	text-decoration: underline;
+	text-decoration-color: var(--btc-accent-edge);
+}
+
+.tc-tiddlylink-missing {
+	color: var(--tpc-muted-foreground);
+	text-decoration-style: dotted;
+	text-decoration-line: underline;
+}
+
+.tc-tiddlylink-external {
+	color: var(--tpc-external-link-foreground);
+	background-color: var(--tpc-external-link-background);
+}
+
+.tc-tiddlylink-external:visited {
+	color: var(--tpc-external-link-foreground-visited);
+}
+
+/* ==========================================================================
+** Buttons — all eight states
+** ========================================================================== */
+
+/*
+** Buttons are keys on a machine, and a key has travel.
+**
+** The whole button language is two properties moving together: a hard 1px
+** throw underneath at rest, and on :active that throw collapsing to nothing
+** while the key drops the same 1px. Nothing floats, nothing bounces, nothing
+** overshoots — the key bottoms out against the chassis and stops. `box-shadow`
+** is in the transition list for exactly that reason; without it the shadow
+** would snap while the key glides and the two would come apart.
+**
+** Anyone who has asked for reduced motion, or switched the press animation off
+** in the theme's own settings, keeps the shadow collapse and loses the travel:
+** the state is still legible, it just stops moving. See the .btc-no-press and
+** prefers-reduced-motion rules further down.
+*/
+.tc-btn-invisible,
+.tc-btn-boxed,
+.tc-btn-rounded,
+.tc-btn-mini,
+.tc-btn-big-green,
+button.tc-btn-invisible {
+	font-family: var(--iw-font-plate);
+	cursor: pointer;
+	transition:
+		background-color 120ms var(--btc-ease-out),
+		color 120ms var(--btc-ease-out),
+		border-color 120ms var(--btc-ease-out),
+		box-shadow 80ms var(--btc-ease-out),
+		translate 80ms var(--btc-ease-out);
+}
+
+.tc-btn-invisible {
+	background: none;
+	border: none;
+	padding: var(--btc-space-2xs);
+	margin: 0;
+	color: inherit;
+	border-radius: var(--btc-radius);
+	line-height: 1;
+}
+
+.tc-btn-invisible:hover {
+	background-color: var(--btc-rule-faint);
+}
+
+.tc-btn-invisible:active {
+	translate: 0 1px;
+}
+
+/*
+** `.tc-btn-rounded` is NOT rounded here, and the rule is deliberate rather
+** than forgotten. The core hands a theme two boxed shapes and expects one of
+** them to be a pill; a pill is a moulded form, and nothing in this theme is
+** moulded. Both take the machined key instead, and the class keeps working —
+** it just stops meaning "round".
+*/
+.tc-btn-boxed,
+.tc-btn-rounded {
+	font-family: var(--iw-font-plate);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	letter-spacing: var(--iw-label-tracking);
+	text-transform: uppercase;
+	padding: var(--btc-space-2xs) var(--btc-space-sm);
+	color: var(--tpc-foreground);
+	background-color: var(--btc-rule-faint);
+	border: 1px solid var(--iw-plate-edge);
+	border-radius: var(--btc-radius);
+	box-shadow: inset 0 1px 0 var(--iw-lit), 0 1px 0 var(--iw-shade);
+}
+
+.tc-btn-boxed:hover,
+.tc-btn-rounded:hover {
+	background-color: var(--btc-accent-wash);
+	border-color: var(--btc-accent-edge);
+}
+
+/* Bottomed out: the throw goes, the key drops into it */
+.tc-btn-boxed:active,
+.tc-btn-rounded:active {
+	translate: 0 1px;
+	box-shadow: inset 0 1px 0 var(--iw-lit), 0 0 0 var(--iw-shade);
+}
+
+/*
+** The primary key is struck from the accent — filled, not outlined, and the
+** only place in the interface where the ember is a surface rather than a mark.
+** That scarcity is what makes it read as the primary action.
+*/
+.tc-btn-big-green,
+.tc-primary-btn {
+	font-family: var(--iw-font-plate);
+	font-size: 0.9375rem;
+	font-weight: 600;
+	letter-spacing: var(--iw-label-tracking);
+	text-transform: uppercase;
+	padding: var(--btc-space-xs) var(--btc-space-md);
+	color: var(--tpc-background);
+	background-color: var(--tpc-primary);
+	border: 1px solid color-mix(in oklch, var(--tpc-primary) 72%, var(--tpc-foreground));
+	border-radius: var(--btc-radius);
+	box-shadow: inset 0 1px 0 var(--iw-lit), 0 1px 0 var(--iw-shade);
+}
+
+.tc-btn-big-green:hover,
+.tc-primary-btn:hover {
+	background-color: color-mix(in oklch, var(--tpc-primary) 85%, var(--tpc-foreground));
+}
+
+.tc-btn-big-green:active,
+.tc-primary-btn:active {
+	translate: 0 1px;
+	box-shadow: inset 0 1px 0 var(--iw-lit), 0 0 0 var(--iw-shade);
+}
+
+.tc-btn-mini {
+	font-family: var(--iw-font-plate);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: var(--iw-label-tracking);
+	text-transform: uppercase;
+	padding: 0 var(--btc-space-2xs);
+	color: var(--tpc-muted-foreground);
+	background: none;
+	border: 1px solid var(--btc-rule);
+	border-radius: var(--btc-radius);
+}
+
+/* Disabled — the key is dead: no throw, no travel, nothing to press against */
+:is(button, .tc-btn-boxed, .tc-btn-rounded, .tc-btn-big-green, .tc-primary-btn):disabled,
+:is(button, .tc-btn-boxed, .tc-btn-rounded):disabled:hover {
+	opacity: 0.45;
+	cursor: not-allowed;
+	background-color: transparent;
+	border-color: var(--btc-rule);
+	box-shadow: none;
+	translate: none;
+}
+
+/* Loading / error / success — driven by data-state so any widget can opt in */
+[data-state="loading"] {
+	cursor: progress;
+	color: var(--tpc-muted-foreground);
+}
+
+[data-state="error"] {
+	color: var(--tpc-alert-highlight);
+	border-color: var(--tpc-alert-highlight);
+}
+
+[data-state="success"] {
+	color: var(--tpc-download-background);
+	border-color: var(--tpc-download-background);
+}
+
+/* Toolbar and control glyphs */
+.tc-tiddler-controls button svg,
+.tc-page-controls button svg,
+.tc-topbar button svg {
+	fill: var(--tpc-tiddler-controls-foreground);
+	transition: fill 120ms var(--btc-ease-out);
+}
+
+.tc-tiddler-controls button:hover svg,
+.tc-page-controls button:hover svg {
+	fill: var(--tpc-tiddler-controls-foreground-hover);
+}
+
+.tc-tiddler-controls button.tc-selected svg,
+.tc-page-controls button.tc-selected svg {
+	fill: var(--tpc-tiddler-controls-foreground-selected);
+}
+
+.tc-tiddler-controls {
+	display: flex;
+	gap: var(--btc-space-2xs);
+	align-items: center;
+	float: inline-end;
+}
+
+/*
+** Controls stay hidden until the sheet is engaged — but never hidden from
+** keyboards, which is why :focus-within is in the selector.
+**
+** The hide is scoped to controls INSIDE a tiddler frame, and it has to be.
+** .tc-tiddler-controls is not private to the story river: the core reuses it
+** in TiddlerInfo, and plugins reuse it for their own panels — the tour's close
+** button (plugins/tiddlywiki/tour/tour-panel.tid) and the help panel
+** (plugins/tiddlywiki/help/HelpPanel.tid) among them. Hiding it unscoped meant
+** every one of those was set to opacity 0 with nothing that could ever bring
+** it back, because the reveal below needs a .tc-tiddler-frame ancestor that
+** those panels do not have. The tour's only way out became invisible.
+*/
+.tc-tiddler-frame .tc-tiddler-controls {
+	opacity: 0;
+	transition: opacity 140ms var(--btc-ease-out);
+}
+
+.tc-tiddler-frame:hover .tc-tiddler-controls,
+.tc-tiddler-frame:focus-within .tc-tiddler-controls {
+	opacity: 1;
+}
+
+/* Scoped to match the rule above. A media query adds no specificity of its
+   own, so a bare .tc-tiddler-controls here would lose to the two-class
+   selector and touch devices would keep the hidden controls. */
+@media (hover: none) {
+	.tc-tiddler-frame .tc-tiddler-controls {
+		opacity: 1;
+	}
+}
+
+.tc-dirty-indicator {
+	color: var(--tpc-dirty-indicator);
+}
+
+/* ==========================================================================
+** Tags
+** ========================================================================== */
+
+.tc-tags-wrapper {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--btc-space-2xs);
+	margin-block-start: var(--btc-space-sm);
+}
+
+/*
+** A tag is a stamped chip, not a pill: a rectangle of stock with the word
+** struck into it. The inset light along its top edge and the shade along its
+** bottom are the same two tokens the plate uses, one pixel each — at this size
+** that is the whole difference between a coloured rectangle and a small piece
+** of metal.
+**
+** Uppercase and tracked out, because a struck label is cut with a die and dies
+** come in one case. It also settles a real legibility problem: tags sit in
+** dense rows, and at 12px lowercase they smear together — caps plus tracking
+** gives each chip its own silhouette.
+*/
+.tc-tag-label {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--btc-space-2xs);
+	font-family: var(--iw-font-plate);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: var(--iw-label-tracking);
+	text-transform: uppercase;
+	line-height: 1.6;
+	padding: 1px var(--btc-space-xs);
+	border-radius: var(--btc-radius);
+	background-color: var(--tpc-tag-background);
+	color: var(--tpc-tag-foreground);
+	box-shadow:
+		inset 0 1px 0 var(--iw-lit),
+		inset 0 -1px 0 var(--iw-shade),
+		calc(var(--iw-misprint-x) * 0.5) 2px 0 var(--iw-shade);
+
+	/*
+	** `break-spaces` is Vanilla's choice and worth keeping: a multi-word tag
+	** wraps at its spaces, and the spaces survive at the line end so the pill
+	** does not visually lose a word boundary. `overflow-wrap: anywhere` stays
+	** alongside it to break a single unbroken tag that is wider than the
+	** sidebar — the two cover different failures.
+	*/
+	white-space: break-spaces;
+	overflow-wrap: anywhere;
+
+	transition: background-color 120ms var(--btc-ease-out);
+}
+
+/*
+** Tag pills own their hover and pressed states.
+**
+** A pill is a .tc-btn-invisible, so it was picking up that button's grey hover
+** wash, and clicking one opens a dropdown - which re-renders the button, drops
+** :hover for a frame, and flashes the pill back to its resting colour before
+** the pointer is noticed again. Giving hover, active and selected the SAME
+** background removes the difference there is to flash between, and the short
+** transition covers the frame in which the node is replaced.
+*/
+.tc-tag-label:hover,
+.tc-tag-label:active,
+.tc-tag-label.tc-selected,
+.tc-btn-invisible.tc-tag-label:hover {
+	background-color: color-mix(in oklch, var(--tpc-tag-background) 82%, var(--tpc-foreground));
+	color: var(--tpc-tag-foreground);
+}
+
+.tc-untagged-label {
+	background-color: var(--tpc-untagged-background);
+}
+
+.tc-untagged-label:hover,
+.tc-untagged-label:active,
+.tc-btn-invisible.tc-untagged-label:hover {
+	background-color: color-mix(in oklch, var(--tpc-untagged-background) 82%, var(--tpc-foreground));
+}
+
+/*
+** The remove button sits INSIDE the pill, so it has to be pill-sized: the
+** button's own 4px padding and a full-em glyph make it taller than the label
+** it belongs to. Flex centring plus a glyph a shade under the cap height puts
+** it on the same optical line as the text.
+*/
+.tc-remove-tag-button {
+	display: inline-flex;
+	align-items: center;
+	padding: 0;
+	opacity: 0.6;
+}
+
+.tc-remove-tag-button svg {
+	inline-size: 0.85em;
+	block-size: 0.85em;
+}
+
+.tc-remove-tag-button:hover {
+	opacity: 1;
+}
+
+/* ==========================================================================
+** Forms and the ruled editor
+** ========================================================================== */
+
+input,
+textarea,
+select,
+.tc-edit-texteditor {
+	font-family: var(--btc-font-ui);
+	font-size: var(--btc-size);
+	color: var(--tpc-foreground);
+	background-color: var(--tpc-background);
+	border: 1px solid var(--tpc-tiddler-editor-border);
+	border-radius: var(--btc-radius);
+	padding: var(--btc-space-xs);
+	transition: border-color 120ms var(--btc-ease-out), box-shadow 120ms var(--btc-ease-out);
+}
+
+input:hover,
+textarea:hover {
+	border-color: var(--btc-ink-faint);
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+	border-color: var(--tpc-primary);
+}
+
+input:disabled,
+textarea:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.tc-tiddler-frame .tc-edit-texteditor {
+	inline-size: 100%;
+	margin-block: var(--btc-space-2xs);
+}
+
+/*
+** `.tc-tiddler-edit-title` is NOT the title input.
+**
+** It is the edit-mode control bar — core/ui/EditTemplate/controls.tid emits
+** `<div class="tc-tiddler-title tc-tiddler-edit-title tc-clearfix">` holding
+** the delete/cancel/done buttons. The title input is a separate element
+** (`input.tc-titlebar.tc-edit-texteditor`, from EditTemplate/title.tid) and is
+** already sized by the .tc-edit-texteditor rule above.
+**
+** It must keep `width: auto`. It also carries `.tc-tiddler-title`, so with
+** sticky titles on it inherits that rule's negative inline margins, which
+** widen it from the sheet's content box out to its padding box. Negative
+** margins only expand a box whose width is auto — give it an explicit
+** `inline-size: 100%` and they merely shift it, leaving it short by exactly
+** the sheet's padding (82px here) on the inline end.
+*/
+.tc-tiddler-edit-title {
+	font-weight: 600;
+}
+
+/*
+** The code face and the theme's editor leading, UNCONDITIONALLY.
+**
+** These used to ride along with the ruling option, which meant switching the
+** ruling off also changed the type you were writing in — two unrelated things
+** on one switch.
+*/
+textarea.tc-edit-texteditor {
+	font-family: var(--btc-font-code);
+	line-height: var(--iw-edit-lh);
+	padding-block-start: var(--btc-space-xs);
+	background-color: var(--tpc-tiddler-editor-background);
+}
+
+/*
+** MOVE 3 — drafting stock.
+**
+** The editor is the one surface in the theme you actually work ON, so it is
+** the one that is ruled. The pitch is bound to the editor's own line-height,
+** so text sits ON the scribe rather than drifting off it, and
+** `background-attachment: local` ties the ruling to the content box — it
+** scrolls WITH the text instead of staying pinned to the element, which is the
+** difference between ruled stock and a ruled window onto it.
+**
+** `background-origin: content-box` insets it by the editor's own padding, so
+** the ruling stops short of the border instead of running into it. It also
+** means the y origin is already past the top padding, so no offset is needed.
+*/
+.iw-scribed-editor textarea.tc-edit-texteditor {
+	background-image: var(--iw-scribe);
+	background-attachment: local;
+	background-origin: content-box;
+}
+
+.tc-edit-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--btc-space-2xs);
+	align-items: center;
+	padding: var(--btc-space-2xs);
+	border: 1px solid var(--tpc-tiddler-editor-border);
+	border-radius: var(--btc-radius);
+}
+
+.tc-edit-tags input.tc-edit-texteditor {
+	border: none;
+	background: none;
+	inline-size: auto;
+	flex: 1 1 8rem;
+	min-inline-size: 0;
+}
+
+.tc-edit-fields {
+	inline-size: 100%;
+	border-collapse: collapse;
+	font-size: 0.8125rem;
+}
+
+/*
+** Stripe the FIELD rows specifically, not every tr. The table also contains
+** the "add a new field" row, which is not a .tc-edit-field — striping by
+** position alone colours it as though it were data.
+*/
+.tc-edit-fields > tbody > .tc-edit-field:nth-child(odd) {
+	background-color: var(--tpc-tiddler-editor-fields-odd);
+}
+
+.tc-edit-fields > tbody > .tc-edit-field:nth-child(even) {
+	background-color: var(--tpc-tiddler-editor-fields-even);
+}
+
+.tc-edit-fields :is(table, tr, td) {
+	border: none;
+	padding: var(--btc-space-2xs);
+}
+
+.tc-edit-fields :is(td, th) {
+	padding: var(--btc-space-2xs) var(--btc-space-xs);
+	text-align: start;
+}
+
+.tc-edit-fields.tc-edit-fields-small {
+	margin-block: 0;
+}
+
+.tc-tiddler-frame .tc-edit-fields input.tc-edit-fieldeditor,
+.tc-tiddler-frame .tc-edit-fields textarea.tc-edit-fieldeditor {
+	margin: 0;
+	padding: 2px 3px;
+}
+
+.tc-edit-field-value input {
+	inline-size: 100%;
+}
+
+.tc-edit-field-remove svg {
+	inline-size: 1em;
+	block-size: 1em;
+	fill: var(--tpc-muted-foreground);
+	vertical-align: middle;
+}
+
+/*
+** The "add a new field" row is an INLINE strip: name box, value box, button.
+**
+** This theme sets `.tc-tiddler-frame .tc-edit-texteditor { inline-size: 100% }`
+** for the body editor, and that also catches the add-field name input — which
+** is what breaks the strip apart, putting each control on its own full-width
+** line. Vanilla resets exactly this input back to auto for the same reason.
+*/
+/*
+** Vanilla resets this input to `width: auto` purely to undo the body editor's
+** 100%. `auto` on a text input means the browser's 20-character default, which
+** at this theme's 15px interface size comes out ~230px — wide enough that
+** label + name + arrow + value + button no longer fit one line and the button
+** wraps. An explicit ch width is both the reset and a deliberate size, and it
+** tracks the font rather than assuming a pixel value.
+*/
+.tc-edit-field-add-name-wrapper input.tc-edit-texteditor {
+	inline-size: 14ch;
+}
+
+/*
+** Keep the strip compact. These inputs carry .tc-edit-texteditor, so they pick
+** up the body editor's roomy padding — which is right for writing prose in and
+** wrong here, where label + name + arrow + value + button have to share one
+** line. At the theme's default padding the row lands a few pixels over and the
+** button wraps onto its own line.
+*/
+.tc-edit-field-add input.tc-edit-texteditor,
+.tc-edit-field-add input.tc-edit-fieldeditor {
+	padding: 2px 3px;
+	margin: 0;
+	vertical-align: middle;
+}
+
+.tc-edit-field-add-name-wrapper,
+.tc-edit-field-add-value,
+.tc-edit-field-add-button {
+	vertical-align: middle;
+}
+
+.tc-edit-field-add-value {
+	inline-size: 35%;
+}
+
+.tc-edit-field-add-button {
+	inline-size: 10%;
+}
+
+/* ---- Content-type selector ---- */
+
+.tc-type-selector-dropdown-wrapper {
+	min-inline-size: 24ch;
+}
+
+.tc-type-selector-dropdown-wrapper input.tc-edit-typeeditor {
+	min-inline-size: 20ch;
+}
+
+.tc-edit-type-dropdown a.tc-tiddlylink-missing {
+	font-style: normal;
+}
+
+/*
+** The edit template is a CSS GRID, not a stack.
+**
+** $:/core/ui/EditTemplate/body/default puts `tc-tiddler-editor` on a wrapper
+** together with either `tc-tiddler-preview` or `tc-tiddler-preview-hidden`,
+** then relies on the theme to lay out three named areas. Without the grid the
+** preview simply falls below the editor in source order instead of sitting
+** beside it, and the toolbar loses its span across the top.
+*/
+.tc-tiddler-editor {
+	display: grid;
+}
+
+.tc-tiddler-frame .tc-tiddler-editor.tc-tiddler-preview {
+	grid-template-areas:
+		"toolbar toolbar"
+		"editor preview";
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	grid-template-rows: auto 1fr;
+}
+
+.tc-tiddler-frame .tc-tiddler-editor.tc-tiddler-preview-hidden {
+	grid-template-areas:
+		"toolbar"
+		"editor";
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-rows: auto 1fr;
+}
+
+.tc-tiddler-frame .tc-tiddler-editor.tc-tiddler-preview .tc-editor-toolbar,
+.tc-tiddler-frame .tc-tiddler-editor.tc-tiddler-preview-hidden .tc-editor-toolbar {
+	grid-area: toolbar;
+}
+
+.tc-tiddler-frame .tc-tiddler-editor.tc-tiddler-preview .tc-edit-texteditor,
+.tc-tiddler-frame .tc-tiddler-editor.tc-tiddler-preview-hidden .tc-edit-texteditor,
+.tc-tiddler-frame .tc-tiddler-editor.tc-tiddler-preview canvas.tc-edit-bitmapeditor,
+.tc-tiddler-frame .tc-tiddler-editor.tc-tiddler-preview-hidden canvas.tc-edit-bitmapeditor {
+	grid-area: editor;
+	max-inline-size: 100%;
+}
+
+.tc-tiddler-frame .tc-tiddler-editor.tc-tiddler-preview .tc-tiddler-preview-preview {
+	grid-area: preview;
+	overflow-wrap: anywhere;
+	word-break: normal;
+	border: 1px solid var(--tpc-tiddler-editor-border);
+	border-radius: var(--btc-radius);
+	margin: var(--btc-space-2xs) 0 3px var(--btc-space-2xs);
+	padding: var(--btc-space-xs);
+	background-color: var(--tpc-tiddler-background);
+
+	/*
+	** The preview must be set in the READING face, not the interface face.
+	** The markup does not carry .tc-tiddler-body, so it would otherwise
+	** inherit the sans UI stack and show something that is not what the
+	** tiddler will actually look like — which is the whole job of a preview.
+	*/
+	font-family: var(--btc-font-body);
+	font-size: var(--iw-body-size);
+	line-height: var(--iw-body-lh);
+	color: var(--tpc-foreground);
+}
+
+/* On a narrow river two columns stop being readable, so the preview drops
+   below the editor rather than being squeezed. */
+@container river (max-width: 44rem) {
+
+	.tc-tiddler-frame .tc-tiddler-editor.tc-tiddler-preview {
+		grid-template-areas:
+			"toolbar"
+			"editor"
+			"preview";
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-rows: auto auto 1fr;
+	}
+
+	.tc-tiddler-frame .tc-tiddler-editor.tc-tiddler-preview .tc-tiddler-preview-preview {
+		margin-inline-start: 0;
+	}
+}
+
+/* ---- Editor toolbar ---- */
+
+.tc-editor-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--btc-space-2xs);
+	align-items: center;
+	margin-block: var(--btc-space-xs);
+	padding-block-end: var(--btc-space-xs);
+	border-block-end: 1px solid var(--btc-rule);
+}
+
+.tc-editor-toolbar button {
+	vertical-align: middle;
+	color: var(--btc-ink-soft);
+	fill: var(--btc-ink-soft);
+	background-color: transparent;
+	border: 1px solid transparent;
+	border-radius: var(--btc-radius);
+	padding: 3px;
+	cursor: pointer;
+	transition: background-color 120ms var(--btc-ease-out), fill 120ms var(--btc-ease-out);
+}
+
+.tc-editor-toolbar button svg {
+	inline-size: 1.4em;
+	block-size: 1.2em;
+}
+
+.tc-editor-toolbar button:hover {
+	background-color: var(--btc-accent-wash);
+	border-color: var(--btc-accent-edge);
+	color: var(--tpc-foreground);
+	fill: var(--tpc-foreground);
+}
+
+.tc-editor-toolbar button.tc-selected {
+	background-color: var(--tpc-primary);
+	color: var(--tpc-background);
+	fill: var(--tpc-background);
+}
+
+.tc-editor-toolbar button.tc-text-editor-toolbar-item-adjunct {
+	margin-inline-start: 1px;
+	inline-size: 1em;
+	border-radius: 999px;
+}
+
+.tc-editor-toolbar button.tc-text-editor-toolbar-item-start-group {
+	margin-inline-start: var(--btc-space-sm);
+}
+
+.tc-editor-toolbar .tc-drop-down button.tc-btn-mini {
+	padding: 2px var(--btc-space-2xs);
+}
+
+.tc-editor-toolbar .tc-text-editor-toolbar-more button {
+	padding: 3px;
+	inline-size: auto;
+}
+
+.tc-editor-toolbar .tc-search-results {
+	padding: 0;
+}
+
+/* ---- Editor drop zone and image import ---- */
+
+.tc-dropzone-editor.tc-dragover .tc-editor-toolbar::after {
+	content: "";
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline: 0;
+	block-size: 100%;
+	z-index: 10000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: none;
+	opacity: 0.9;
+	background-color: var(--tpc-background);
+	border: 3px dashed var(--btc-drop);
+	border-radius: var(--btc-radius);
+	color: var(--tpc-foreground);
+	font-weight: 600;
+}
+
+.tc-editor-import {
+	background-color: var(--tpc-pre-background);
+	border: 1px solid var(--btc-rule);
+	border-radius: var(--btc-radius);
+	box-shadow: var(--iw-misprint-x) var(--iw-misprint) 0 var(--iw-shade);
+	padding: var(--btc-space-sm);
+	inline-size: 96%;
+	text-align: center;
+}
+
+.tc-editor-import img {
+	max-block-size: 500px;
+}
+
+.tc-tiddler-edit-frame em.tc-edit {
+	color: var(--tpc-muted-foreground);
+	font-style: normal;
+}
+
+/* ==========================================================================
+** Sidebar
+** ========================================================================== */
+
+/*
+** The chassis.
+**
+** The sidebar is the frame the plates are worked on, so it is the one large
+** surface that carries the rolling grain. It is painted here rather than in
+** layout.tid because it is a finish, not a mechanism: layout.tid owns where
+** this panel is and how it slides, and nothing in this rule may affect either.
+**
+** `background-attachment: local` matters. The panel scrolls its own content,
+** and grain belongs to the metal — a fixed or scrolling attachment would have
+** the panel's surface slide underneath its own edge as the list moves, which
+** is the one way a texture like this announces itself as a texture.
+*/
+.tc-sidebar-scrollable {
+	background-image: var(--iw-grain);
+	background-attachment: local;
+}
+
+.tc-sidebar-header {
+	padding: var(--btc-space-lg);
+	color: var(--tpc-sidebar-foreground);
+}
+
+/*
+** Sit the site title on the same line as the first tiddler's title.
+**
+** Two things have to be true for this to be exact rather than approximate.
+**
+** First the offsets must match, which --iw-title-offset handles. Second the
+** two headings must share font-size and line-height: baseline position within
+** a line box depends on the font's ascent, which CSS cannot read, so two
+** headings at different sizes cannot be baseline-aligned by arithmetic. Giving
+** them the same type makes aligning their box tops align their baselines
+** exactly, in whatever font the stack resolves to.
+**
+** Desktop only. Below the breakpoint the sidebar sits above the river rather
+** than beside it, so there is no shared line to align to.
+*/
+@media (min-width: {{$:/themes/BurningTreeC/vanilla-ironworks/metrics/sidebarbreakpoint}}) {
+
+	.tc-sidebar-header {
+		padding-block-start: var(--iw-title-offset);
+	}
+}
+
+/* Same type as .tc-title, exactly — see the baseline note above. Change one of
+   these two and the site title stops landing on the first tiddler's line. */
+.tc-site-title {
+	font-family: var(--iw-font-plate);
+	font-size: var(--btc-title-size);
+	font-style: normal;
+	font-weight: 700;
+	line-height: 1.15;
+	letter-spacing: 0.004em;
+	color: var(--tpc-site-title-foreground);
+	text-wrap: balance;
+	overflow-wrap: anywhere;
+}
+
+.tc-sidebar-header .tc-title {
+	font-size: 1.5rem;
+}
+
+.tc-sidebar-header .tc-subtitle {
+	color: var(--tpc-sidebar-foreground);
+	margin-block-end: var(--btc-space-md);
+}
+
+.tc-sidebar-lists .tc-tiddlylink {
+	color: var(--tpc-sidebar-tiddler-link-foreground);
+}
+
+/*
+** The inline-block is for ordinary sidebar links only — it exists so the
+** vertical padding below actually enlarges the hit area, which an inline box
+** would paint but not reserve space for.
+**
+** It must NOT reach .tc-plugin-info. A plugin row is an <a> too, so this
+** selector matches it, and at (0,2,0) it outranks `.tc-plugin-info { display:
+** flex }` at (0,1,0). The row then shrink-wraps to its content instead of
+** filling the sidebar — which is why every plugin row came out a different
+** width. Vanilla never hits this because its sidebar rule sets colour only.
+*/
+.tc-sidebar-lists .tc-tiddlylink:not(.tc-plugin-info) {
+	display: inline-block;
+	padding-block: 1px;
+}
+
+.tc-sidebar-lists .tc-tiddlylink:hover {
+	color: var(--tpc-sidebar-tiddler-link-foreground-hover);
+}
+
+.tc-page-controls {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--btc-space-xs);
+	align-items: center;
+	margin-block: var(--btc-space-md);
+}
+
+.tc-page-controls svg {
+	fill: var(--tpc-sidebar-controls-foreground);
+	inline-size: 1.25em;
+	block-size: 1.25em;
+}
+
+.tc-page-controls button:hover svg {
+	fill: var(--tpc-sidebar-controls-foreground-hover);
+}
+
+.tc-sidebar-search {
+	margin-block: var(--btc-space-md);
+	display: flex;
+	gap: var(--btc-space-2xs);
+	align-items: center;
+}
+
+.tc-sidebar-search input {
+	inline-size: 100%;
+	min-inline-size: 0;
+	background-color: var(--tpc-background);
+}
+
+/* ==========================================================================
+** Tabs
+** ========================================================================== */
+
+.tc-tab-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2px;
+	border-block-end: 1px solid var(--tpc-tab-border);
+}
+
+/*
+** A tab strip is a bank of switches. Each one is a machined top with the light
+** catch along it; the engaged switch loses that catch, takes the ember bar
+** across its top edge, and merges with the panel below it.
+*/
+.tc-tab-buttons button {
+	font-family: var(--iw-font-plate);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: var(--iw-label-tracking);
+	text-transform: uppercase;
+	padding: var(--btc-space-2xs) var(--btc-space-sm);
+	color: var(--tpc-tab-foreground);
+	background-color: var(--tpc-tab-background);
+	border: 1px solid var(--tpc-tab-border);
+	border-block-end: none;
+	border-radius: var(--btc-radius) var(--btc-radius) 0 0;
+	box-shadow: inset 0 1px 0 var(--iw-lit);
+	cursor: pointer;
+	white-space: nowrap;
+	transition: background-color 120ms var(--btc-ease-out), color 120ms var(--btc-ease-out);
+}
+
+.tc-tab-buttons button:hover {
+	color: var(--tpc-foreground);
+}
+
+.tc-tab-buttons button.tc-tab-selected {
+	color: var(--tpc-tab-foreground-selected);
+	background-color: var(--tpc-tab-background-selected);
+	border-color: var(--tpc-tab-border-selected);
+	box-shadow: inset 0 2px 0 var(--tpc-primary);
+}
+
+.tc-tab-content {
+	padding-block-start: var(--btc-space-md);
+}
+
+.tc-sidebar-lists .tc-tab-buttons button {
+	background-color: var(--tpc-sidebar-tab-background);
+	color: var(--tpc-sidebar-tab-foreground);
+	border-color: var(--tpc-sidebar-tab-border);
+}
+
+/*
+** Both colours, from the same pair.
+**
+** This rule used to set only the background, leaving the text at
+** `tab-foreground-selected` from the rule above - a foreground from one pair on
+** a background from another. Palettes are not obliged to keep those two in
+** step, and several do not: on DarkPhotos the mixed pairing measured 1.21:1,
+** i.e. the label vanished, against 5.25:1 for the palette's own sidebar pair.
+**
+** Not every palette defines a sidebar foreground, so it is asked for directly
+** and the general tab colour is used when it is absent. `colour` would not
+** answer that question - it falls through to a default and always returns
+** something - which is why this reads the palette index.
+*/
+.tc-sidebar-lists .tc-tab-buttons button.tc-tab-selected {
+	color: {{{ [{$:/palette}getindex[sidebar-tab-foreground-selected]!is[blank]then[var(--tpc-sidebar-tab-foreground-selected)]] ~[[var(--tpc-tab-foreground-selected)]] }}};
+	background-color: var(--tpc-sidebar-tab-background-selected);
+	border-color: var(--tpc-sidebar-tab-border-selected);
+}
+
+.tc-tab-divider {
+	border: none;
+	block-size: 1px;
+	background-color: var(--tpc-tab-divider);
+}
+
+/* ==========================================================================
+** Topbar
+** ========================================================================== */
+
+.tc-topbar {
+	position: fixed;
+	z-index: 1200;
+	padding: var(--btc-space-xs);
+}
+
+.tc-topbar-left {
+	inset-block-start: 0;
+	inset-inline-start: 0;
+}
+
+.tc-topbar-right {
+	inset-block-start: 0;
+	inset-inline-end: 0;
+}
+
+.tc-topbar button svg {
+	fill: var(--tpc-sidebar-controls-foreground);
+}
+
+.tc-topbar button:hover svg {
+	fill: var(--tpc-sidebar-controls-foreground-hover);
+}
+
+/* ==========================================================================
+** TiddlyWiki layout utility classes
+**
+** These are functional, not decorative — core markup relies on them, so a
+** standalone theme has to carry them or the UI breaks.
+** ========================================================================== */
+
+.tc-flex { display: flex; }
+.tc-flex-row { flex-direction: row; }
+.tc-flex-column { flex-direction: column; }
+.tc-flex-grow-1 { flex-grow: 1; }
+.tc-flex-grow-2 { flex-grow: 2; }
+
+/*
+** Gap utilities are sized in `em`, not on the 4pt token scale.
+**
+** That looks like an inconsistency and is deliberate. These classes are
+** applied inline by core markup to separate one control from its neighbour —
+** `tc-small-gap-right` on the close button in the Open tab, `tc-tiny-gap-right`
+** beside the search field — so the gap has to scale with whatever text it sits
+** next to. A fixed 4px reads correctly at body size and far too tight beside a
+** title. The token scale governs layout; these govern inline rhythm.
+**
+** The values match Vanilla's, because core markup was authored against them —
+** an element spaced with `tc-small-gap-right` was judged at .5em, not at 4px.
+** My earlier fixed-pixel values were roughly half, which left the sidebar's
+** inline controls visibly cramped.
+*/
+.tc-tiny-gap { margin-inline: 0.25em; }
+.tc-tiny-gap-left { margin-inline-start: 0.25em; }
+.tc-tiny-gap-right { margin-inline-end: 0.25em; }
+.tc-tiny-v-gap-bottom { margin-block-end: 3px; }
+.tc-small-gap { margin-inline: 0.5em; }
+.tc-small-gap-left { margin-inline-start: 0.5em; }
+.tc-small-gap-right { margin-inline-end: 0.5em; }
+.tc-big-gap { margin-inline: 1em; }
+.tc-big-gap-left { margin-inline-start: 1em; }
+.tc-big-gap-right { margin-inline-end: 1em; }
+
+.tc-float-right { float: inline-end; }
+.tc-center { text-align: center; }
+.tc-vertical { display: block; }
+.tc-max-width { inline-size: 100%; }
+.tc-max-width-80 { inline-size: 80%; }
+.tc-word-break { overflow-wrap: anywhere; }
+.tc-first-link-nowrap .tc-tiddlylink:first-child { white-space: nowrap; }
+
+.tc-clearfix::after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+/*
+** Left inline, deliberately. `display: inline-flex` makes this an atomic inline
+** box, so it can never wrap internally - in the Control Panel's toolbar lists
+** the caption and its description are inside this span, and a long description
+** pushed the whole span onto its own line, leaving the checkbox stranded above
+** it. Vanilla styles only the svg here and leaves the span alone.
+**
+** The icons still line up: the svg rule near the top of this sheet gives them
+** `vertical-align: middle` and a 1em box.
+*/
+.tc-icon-wrapper {
+	display: inline;
+}
+
+.tc-image-button svg {
+	inline-size: 1em;
+	block-size: 1em;
+	vertical-align: middle;
+}
+
+.tc-menu-list-item {
+	display: block;
+}
+
+.tc-menu-list-subitem {
+	padding-inline-start: var(--btc-space-xs);
+}
+
+.tc-unfold-banner,
+.tc-fold-banner {
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: var(--tpc-tiddler-controls-foreground);
+}
+
+.tc-unfold-banner:hover,
+.tc-fold-banner:hover {
+	color: var(--tpc-tiddler-controls-foreground-hover);
+}
+
+/* ==========================================================================
+** Mobile
+**
+** Hard floor: no horizontal scroll, no two-line clickable text, image-bearing
+** tracks use minmax(0, 1fr), display type wraps inside long words.
+** ========================================================================== */
+
+@media (max-width: 480px) {
+
+	/* Edge to edge on a phone. The gutter and the inline-start shift are NOT
+	   here: they belong to the container query that drops the margin rule, so
+	   they stay in step with it. */
+	.tc-tiddler-frame {
+		--btc-frame-radius: 0px;
+		border-radius: 0;
+		border-inline: none;
+	}
+
+	.tc-title {
+		font-size: 1.375rem;
+	}
+
+	.tc-tiddler-body {
+		font-size: 1rem;
+	}
+
+	.tc-modal {
+		inline-size: 100%;
+		border-radius: 0;
+	}
+
+	.tc-tab-buttons {
+		overflow-x: auto;
+		flex-wrap: nowrap;
+		scrollbar-width: none;
+	}
+}
+
+/* Touch targets */
+@media (pointer: coarse) {
+
+	.tc-btn-invisible,
+	.tc-tiddler-controls button,
+	.tc-page-controls button {
+		min-block-size: 32px;
+		min-inline-size: 32px;
+	}
+}
+
+/* ==========================================================================
+** The remaining surfaces — Ironworks's own decisions
+**
+** These are the gaps the structural pass deliberately skipped. Vanilla's
+** STRUCTURE is followed (what gets a border, what is muted, what is emphasised,
+** what carries a status colour) but every value is Ironworks's, resolved from
+** the palette. Where Vanilla hardcodes a literal — `green`, `#e0e0e0`, an acid
+** yellow hazard stripe — the signal is kept and the colour comes from a token,
+** so these surfaces re-tint with the palette like the rest of the theme.
+** ========================================================================== */
+
+/* ---- Alerts and help text ---- */
+
+.tc-alert-body > p {
+	margin: 0;
+}
+
+.tc-alert-subtitle {
+	color: var(--tpc-alert-muted-foreground);
+	font-weight: 600;
+	font-size: 0.8em;
+	margin-block-end: var(--btc-space-xs);
+}
+
+.tc-tiddler-help {
+	color: var(--tpc-muted-foreground);
+	margin-block-start: var(--btc-space-md);
+}
+
+.tc-system-title-prefix {
+	color: var(--tpc-muted-foreground);
+}
+
+.tc-menu-list-count {
+	font-weight: 600;
+}
+
+/* ---- Buttons ---- */
+
+.tc-btn-icon svg {
+	inline-size: 1em;
+	block-size: 1em;
+	fill: var(--tpc-muted-foreground);
+}
+
+/* A "fake" button used in documentation to depict a real one, so it should
+   read as the theme's own button rather than a live control. */
+.tc-btn-standard {
+	line-height: 1.8;
+	color: var(--btc-ink-soft);
+	background-color: var(--tpc-tab-background);
+	border: 1px solid var(--btc-rule);
+	border-radius: var(--btc-radius);
+	padding: 2px var(--btc-space-2xs);
+	margin-inline: var(--btc-space-2xs);
+}
+
+/* ---- Images ---- */
+
+.tc-bordered-image {
+	border: 1px solid var(--iw-plate-edge);
+	padding: var(--btc-space-2xs);
+	margin: var(--btc-space-2xs);
+	border-radius: var(--btc-radius);
+}
+
+.tc-fill-background {
+	fill: var(--tpc-background);
+}
+
+.tc-single-tiddler-window img,
+.tc-single-tiddler-window svg,
+.tc-single-tiddler-window embed,
+.tc-single-tiddler-window iframe {
+	max-inline-size: 100%;
+}
+
+/* ---- Control panel and tables ---- */
+
+.tc-control-panel td {
+	padding: var(--btc-space-2xs);
+}
+
+.tc-control-panel table > tbody > tr > td {
+	text-align: start;
+}
+
+.tc-control-panel table,
+.tc-control-panel table input,
+.tc-control-panel table textarea {
+	inline-size: 100%;
+}
+
+.tc-control-panel-setting {
+	border-block-start: 1px solid var(--btc-rule);
+	padding-block-start: var(--btc-space-xs);
+}
+
+.tc-table-no-border,
+.tc-table-no-border th,
+.tc-table-no-border td {
+	border: initial;
+}
+
+.tc-first-col-min-width td:nth-child(1) {
+	inline-size: 1%;
+}
+
+.tc-view-field-value {
+	word-break: break-all;
+}
+
+/* ---- Advanced search, choosers ---- */
+
+/* Full width. Vanilla's 60% leaves the field short of the button beside it and
+   a gap where nothing is; on a narrow sheet it is barely usable. */
+.tc-advanced-search input {
+	inline-size: 100%;
+}
+
+.tc-chooser {
+	border-inline: 1px solid var(--btc-rule);
+}
+
+/* ---- Diff ---- */
+
+.tc-diff-equal {
+	background-color: var(--tpc-diff-equal-background);
+	color: var(--tpc-diff-equal-foreground);
+}
+
+.tc-diff-tiddlers th {
+	text-align: end;
+	background-color: var(--tpc-background);
+	font-family: var(--iw-font-plate);
+	font-style: normal;
+	font-weight: 600;
+	letter-spacing: var(--iw-label-tracking);
+	text-transform: uppercase;
+}
+
+.tc-diff-tiddlers pre {
+	margin: 0;
+	padding: 0;
+	border: none;
+	background: none;
+}
+
+/* ---- Editor fields ---- */
+
+.tc-edit-field-name {
+	text-align: end;
+}
+
+.tc-edit-field-value input,
+.tc-edit-max-width input,
+.tc-edit-max-width textarea {
+	inline-size: 100%;
+}
+
+.tc-edit-max-width input,
+.tc-edit-max-width textarea {
+	padding: 3px;
+}
+
+.tc-edit-tags-list {
+	margin-block: var(--btc-space-md);
+}
+
+.tc-type-selector .tc-edit-typeeditor {
+	inline-size: auto;
+}
+
+.tc-editor-importpopup {
+	inline-size: 100%;
+	block-size: 100%;
+}
+
+input.tc-palette-manager-colour-input {
+	inline-size: 100%;
+	padding: 0;
+}
+
+/* ---- Global tiddler body (the $:/ inspector panel) ----
+   Vanilla fills this with muted-foreground, which is a mid grey used as a
+   surface. Ironworks treats it as an inset note instead, matching the theme's
+   other info panels. */
+
+.tc-global-tiddler-body {
+	padding: var(--btc-space-2xs);
+	border: 1px solid var(--btc-rule);
+	border-radius: var(--btc-radius);
+	background-color: var(--tpc-tiddler-info-background);
+}
+
+.tc-global-tiddler-body-details {
+	background-color: var(--tpc-background);
+}
+
+.tc-global-tiddler-body pre {
+	margin: 0;
+	border: 1px solid var(--btc-rule);
+}
+
+.tc-global-tiddler-body-heading {
+	margin: 0 0 var(--btc-space-2xs) 0;
+	font-weight: normal;
+}
+
+.tc-global-tiddler-body-type {
+	margin: 0 0 var(--btc-space-2xs) 0;
+	border-block-end: 1px solid var(--btc-rule);
+}
+
+/* ---- Plugin install buttons ----
+   Vanilla uses the literals green / blue / red / orange. The signal is worth
+   keeping; the colours come from the palette's own status ramp so they stay
+   legible on a dark palette. */
+
+.tc-install-plugin {
+	font-weight: 600;
+	border-radius: var(--btc-radius);
+	padding: 3px var(--btc-space-2xs);
+	color: var(--tpc-background);
+	fill: var(--tpc-background);
+	background-color: var(--tpc-download-background);
+}
+
+.tc-install-plugin.tc-reinstall {
+	background-color: var(--tpc-primary);
+}
+
+.tc-install-plugin.tc-reinstall-downgrade {
+	background-color: var(--tpc-alert-highlight);
+}
+
+.tc-install-plugin.tc-reinstall-upgrade {
+	background-color: var(--tpc-stability-experimental);
+}
+
+/* ---- Plugin info panels ---- */
+
+.tc-plugin-info-dropdown {
+	border: 1px solid var(--btc-rule);
+	background-color: var(--tpc-background);
+	margin-block-start: -8px;
+}
+
+.tc-plugin-info-sub-plugins .tc-plugin-info-dropdown {
+	margin-inline: var(--btc-space-md);
+}
+
+.tc-plugin-info-dropdown-body {
+	padding: var(--btc-space-md) var(--btc-space-md) 0 var(--btc-space-md);
+	background-color: var(--tpc-background);
+}
+
+.tc-plugin-info-dropdown-message {
+	background-color: var(--tpc-message-background);
+	color: var(--tpc-message-foreground);
+	padding: var(--btc-space-xs) var(--btc-space-md);
+	font-weight: 600;
+	font-size: 0.8em;
+}
+
+.tc-plugin-info-sub-plugins {
+	padding: var(--btc-space-xs);
+	margin: 0 var(--btc-space-md) var(--btc-space-md) var(--btc-space-md);
+	background-color: var(--tpc-notification-background);
+	border-radius: var(--btc-radius);
+}
+
+.tc-plugin-info-sub-plugin-indicator {
+	margin: -16px var(--btc-space-md) 0 var(--btc-space-xl);
+}
+
+.tc-plugin-info-sub-plugin-indicator button {
+	color: var(--tpc-background);
+	background-color: var(--tpc-foreground);
+	border: none;
+	border-radius: 999px;
+	padding: 2px 7px;
+	font-size: 0.75em;
+}
+
+/*
+** Disabled plugin. Vanilla draws acid-yellow hazard stripes. The diagonal
+** stripe is a genuinely good "switched off" signal, so it stays — but built
+** from the palette so it reads as disabled rather than as an error, and works
+** on a dark palette where #ff0 on #eee would not.
+*/
+.tc-plugin-info-disabled {
+	background-image: repeating-linear-gradient(
+		45deg,
+		var(--btc-rule-faint) 0 10px,
+		var(--tpc-background) 10px 20px
+	);
+}
+
+.tc-plugin-info-disabled:hover {
+	background-image: repeating-linear-gradient(
+		45deg,
+		var(--btc-rule) 0 10px,
+		var(--tpc-background) 10px 20px
+	);
+}
+
+.tc-network-activity-background {
+	fill: var(--tpc-network-activity-foreground);
+}
+
+/* ---- Tiddler manager ---- */
+
+.tc-manager-control {
+	margin-block: var(--btc-space-xs);
+}
+
+.tc-manager-control select {
+	max-inline-size: 100%;
+}
+
+.tc-manager-icon-editor > button {
+	inline-size: 100%;
+}
+
+.tc-manager-icon-editor > button > svg,
+.tc-manager-icon-editor > button > img {
+	inline-size: 100%;
+	block-size: auto;
+}
+
+.tc-manager-list {
+	inline-size: 100%;
+	border: 1px solid var(--btc-rule);
+	border-block-end: none;
+}
+
+.tc-manager-list-item-heading-selected {
+	font-weight: 600;
+	color: var(--tpc-background);
+	fill: var(--tpc-background);
+	background-color: var(--tpc-foreground);
+}
+
+.tc-manager-list-item-content-item-body {
+	padding-inline: var(--btc-space-xs);
+}
+
+.tc-manager-list-item-content-item-body > pre {
+	margin-block: var(--btc-space-xs);
+	border: none;
+	background: inherit;
+}
+
+.tc-manager-list-item-content-item-body > table {
+	border: none;
+	padding: 0;
+	margin: 0;
+}
+
+.tc-manager-list-item-content-item-body > table td {
+	border: none;
+}
+
+.tc-tag-manager-tag {
+	inline-size: 100%;
+}
+
+/* ---- Test cases ---- */
+
+.tc-test-case-wrapper {
+	border: 1px solid var(--btc-rule);
+	border-radius: var(--btc-radius-lg);
+	background-color: var(--tpc-testcase-accent-level-1);
+}
+
+.tc-test-case-wrapper .tc-test-case-wrapper {
+	background-color: var(--tpc-testcase-accent-level-2);
+}
+
+.tc-test-case-wrapper .tc-test-case-wrapper .tc-test-case-wrapper {
+	background-color: var(--tpc-testcase-accent-level-3);
+}
+
+.tc-test-case-header {
+	font-weight: normal;
+	margin-block: var(--btc-space-xs);
+	padding-inline: var(--btc-space-xs);
+}
+
+.tc-test-case-header > h2 {
+	background-color: var(--tpc-background);
+	border-radius: var(--btc-radius);
+	padding: var(--btc-space-2xs);
+	border: none;
+}
+
+.tc-test-case-narrative {
+	padding: var(--btc-space-xs);
+}
+
+.tc-test-case-result-fail {
+	border: 1px solid var(--btc-rule);
+	background-color: var(--tpc-background);
+	border-radius: var(--btc-radius);
+	margin-inline: var(--btc-space-xs);
+	padding: 0;
+}
+
+.tc-test-case-result-fail-body {
+	padding: var(--btc-space-2xs);
+}
+
+.tc-test-case-result-fail-header {
+	background-color: var(--tpc-diff-delete-background);
+	color: var(--tpc-diff-delete-foreground);
+	border-start-start-radius: var(--btc-radius);
+	border-start-end-radius: var(--btc-radius);
+	padding: var(--btc-space-2xs);
+}
+
+.tc-test-case-result-icon-pass {
+	background-color: var(--tpc-stability-stable);
+}
+
+.tc-test-case-result-icon-fail {
+	background-color: var(--tpc-alert-highlight);
+}
+
+/* ---- Lazy-loading progress bar ---- */
+
+@keyframes iw-loading-progress {
+	0%   { background-position: -150% 0, -150% 0; }
+	66%  { background-position:  250% 0, -150% 0; }
+	100% { background-position:  250% 0,  250% 0; }
+}
+
+.tc-tiddler-lazy-loading {
+	block-size: 4px;
+	inline-size: 100%;
+	background:
+		no-repeat linear-gradient(var(--tpc-background) 0 0),
+		no-repeat linear-gradient(var(--tpc-background) 0 0),
+		var(--tpc-primary);
+	background-size: 60% 100%;
+	animation: iw-loading-progress 3s infinite;
+}
+
+/* ---- Translated-link widget ---- */
+
+.tc-translink {
+	background-color: var(--tpc-pre-background);
+	border: 1px solid var(--tpc-pre-border);
+	padding: 0 3px;
+	border-radius: var(--btc-radius);
+}
+
+div.tc-translink > div {
+	margin: 1em;
+}
+
+div.tc-translink > div > a:first-child > h1 {
+	font-size: 1.2em;
+	font-weight: 600;
+}
+
+span.tc-translink > a:first-child {
+	font-weight: 600;
+}
+
+/* ==========================================================================
+** Reduced motion
+** ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 1ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 150ms !important;
+	}
+
+	/* The focus ring must never be animated, in either mode */
+	:focus-visible {
+		transition: none !important;
+	}
+
+	/*
+	** Key travel is spatial motion, so it goes. What stays is the shadow
+	** collapse underneath it: the key still visibly bottoms out on press, it
+	** just does it without moving the label. This is the same trade the
+	** press-animation setting makes by hand, applied automatically.
+	*/
+	.tc-btn-invisible:active,
+	.tc-btn-boxed:active,
+	.tc-btn-rounded:active,
+	.tc-btn-big-green:active,
+	.tc-primary-btn:active,
+	.tc-tag-label:active {
+		translate: none;
+	}
+}
+
+/* ==========================================================================
+** Overrides on the shared structure
+**
+** 2-structure carries the structural rules this theme shares with the rest
+** of the family. What follows is only where THIS theme disagrees with it.
+** Core sorts before every theme name, so these win on an equal-specificity
+** tie without !important.
+** ========================================================================== */
+
+/* ---- Dropdowns and popups ---- */
+/*
+** The two dropdown kinds are NOT interchangeable, which is why they are no
+** longer one rule.
+**
+** .tc-drop-down is rendered inside a .tc-popup, and the reveal widget sets
+** `position: absolute` and a z-index on that popup in JavaScript
+** (core/modules/widgets/reveal.js:55). It therefore needs no positioning of
+** its own.
+**
+** .tc-block-dropdown has no such wrapper — it is a plain child of
+** .tc-block-dropdown-wrapper. It has to position ITSELF, and a z-index
+** without a position is inert, so sharing one rule left it in normal flow:
+** it pushed the content below it down the page instead of floating over it.
+*/
+.tc-drop-down,
+.tc-block-dropdown {
+	min-inline-size: 12rem;
+	padding: var(--btc-space-2xs) 0;
+	background-color: color-mix(in srgb, var(--tpc-dropdown-background) 92%, transparent);
+	backdrop-filter: blur(8px) saturate(1.4);
+	border: 1px solid var(--tpc-dropdown-border);
+	border-radius: var(--btc-radius-lg);
+	box-shadow: var(--iw-misprint-x) var(--iw-misprint) 0 var(--iw-shade);
+	font-family: var(--btc-font-ui);
+	font-size: 0.875rem;
+	line-height: 1.4;
+	text-shadow: none;
+	z-index: 1000;
+
+	/* Menu entries are labels, not prose — a wrapped command reads as two
+	   commands. Vanilla sets this on both dropdown kinds; I had it only on the
+	   block variant, so popup menus could wrap. */
+	white-space: nowrap;
+}
+
+/* ---- Modals, alerts, notifications, messages ---- */
+/*
+** The modal must POSITION ITSELF.
+**
+** The three layers are stacked by z-index — wrapper 900, backdrop 1000, modal
+** 1100 — and z-index only applies to positioned elements. With the modal left
+** static it took no z-index at all and was painted in document order, which put
+** it UNDER the backdrop: a dimmed, unclickable dialog. Static also meant it had
+** no geometry of its own, so it fell back to block flow and came out the wrong
+** size in the wrong place.
+**
+** Geometry follows Vanilla's shape rather than a fixed width: inset from both
+** edges on a small screen, and a centred half-width column above 55em. Stated
+** with logical properties, so it mirrors in RTL.
+*/
+.tc-modal {
+	position: fixed;
+	z-index: 1100;
+	inset-block-start: 1em;
+	inset-inline: 1em;
+	background-color: var(--tpc-modal-background);
+	border: 1px solid var(--tpc-modal-border);
+	border-radius: var(--btc-radius-lg);
+	box-shadow: calc(var(--iw-misprint-x) * 2) calc(var(--iw-misprint) * 2) 0 var(--iw-shade);
+	overflow: hidden;
+}
+
+.tc-alert {
+	position: relative;
+	padding: var(--btc-space-md);
+	margin: var(--btc-space-md);
+	background-color: var(--tpc-alert-background);
+	border: 1px solid var(--tpc-alert-border);
+	border-inline-start: 3px solid var(--tpc-alert-highlight);
+	border-radius: var(--btc-radius);
+	box-shadow: var(--iw-misprint-x) var(--iw-misprint) 0 var(--iw-shade);
+}
+
+.tc-notification {
+	padding: var(--btc-space-sm) var(--btc-space-md);
+	background-color: var(--tpc-notification-background);
+	border: 1px solid var(--tpc-notification-border);
+	border-radius: var(--btc-radius);
+	box-shadow: var(--iw-misprint-x) var(--iw-misprint) 0 var(--iw-shade);
+	font-family: var(--btc-font-ui);
+	font-size: 0.875rem;
+	z-index: 1200;
+}
+
+/* ---- Core structural rules — the systematic pass ---- */
+/*
+** Small screens only.
+**
+** Vanilla scopes this to `@media (max-width: <breakpoint>)` — see its comment
+** "Make search dropdown visible on small screens. issue #7003". Dropping the
+** wrapper's positioning lets the search dropdown escape a narrow wrapper and
+** span the collapsed sidebar. Applied at every width it does the opposite
+** favour: on desktop the dropdown then positions against some further
+** ancestor instead of its own wrapper.
+*/
+@media (max-width: {{{ [{$:/themes/BurningTreeC/vanilla-ironworks/metrics/sidebarbreakpoint}removesuffix[px]subtract[1]addsuffix[px]] ~[{$:/themes/BurningTreeC/vanilla-ironworks/metrics/sidebarbreakpoint}] }}}) {
+
+	.tc-sidebar-search .tc-block-dropdown-wrapper {
+		position: initial;
+	}
+}
+
+.tc-missing-tiddler-label {
+	display: inline-block;
+	white-space: nowrap;
+	vertical-align: baseline;
+
+	/* A stamped label, not an italic aside — same die as every other label in
+	   the theme, and one less italic in a file that has a rule against them. */
+	font-family: var(--iw-font-plate);
+	font-style: normal;
+	font-weight: 600;
+	font-size: 0.75rem;
+	letter-spacing: var(--iw-label-tracking);
+	text-transform: uppercase;
+	color: var(--btc-ink-faint);
+}
+
+/*
+** A missing tiddler is struck through, not italicised.
+**
+** The inherited rule set the title in italics, which is the weakest signal
+** available and — on a display face — the single most generated-looking thing
+** a stylesheet can do. A title that names nothing gets a line drawn through it
+** in oxide instead: the same mark you would make on a job sheet for a part
+** that is not in the rack.
+*/
+.tc-tiddler-missing .tc-title {
+	font-style: normal;
+	font-weight: 700;
+	color: var(--btc-ink-faint);
+	text-decoration: line-through;
+	text-decoration-color: var(--iw-oxide);
+	text-decoration-thickness: 2px;
+}
+
+/*
+** Sidebar toggle chevrons.
+**
+** Rotation is a SMALL-SCREEN rule only. Below the breakpoint the sidebar
+** collapses upward, so the chevron should point up/down; at desktop widths it
+** slides along the inline axis and the unrotated glyph is already correct.
+** Applying the rotation everywhere leaves the wide-screen buttons pointing the
+** wrong way.
+*/
+@media (max-width: {{{ [{$:/themes/BurningTreeC/vanilla-ironworks/metrics/sidebarbreakpoint}removesuffix[px]subtract[1]addsuffix[px]] ~[{$:/themes/BurningTreeC/vanilla-ironworks/metrics/sidebarbreakpoint}] }}}) {
+
+	/*
+	** Below the breakpoint the sidebar is not beside the river, it is ABOVE it,
+	** so the chevron points up rather than sideways - and the side flip is
+	** switched off, because "which inline edge" means nothing once the panel is
+	** in normal flow.
+	**
+	** Only the two custom properties are set here, never `transform` itself.
+	** This selector is (0,2,1) and the one that composes the transform is
+	** (0,1,1), so writing a second `transform` here would win outright and
+	** silently discard the mirror rather than combining with it.
+	*/
+	.tc-show-sidebar-btn svg.tc-image-chevron-left,
+	.tc-hide-sidebar-btn svg.tc-image-chevron-right {
+		--btc-chevron-rot: -90deg;
+		--btc-chevron-flip: 1;
+	}
+}
+
+/*
+** A highlight is a marker stroke: run at a slight angle, overshooting the word
+** at one end and stopping short at the other, and NOT filling its own box to
+** the corners. A rectangle of colour behind text is a spreadsheet cell; this
+** is someone going over the line with a pen.
+*/
+.tc-inline-style {
+	color: var(--tpc-highlight-foreground);
+	background-color: transparent;
+	background-image: linear-gradient(
+		96deg,
+		transparent 0 1px,
+		var(--tpc-highlight-background) 2px 97%,
+		transparent 99%
+	);
+	background-size: 100% 1.15em;
+	background-position: 0 58%;
+	background-repeat: no-repeat;
+	padding-inline: 2px;
+}
+
+/* ---- Deeper surfaces ---- */
+/* ---- Whole-page drop target ----
+** A band of tape across the head of the page. It carries the core's own drop
+** message rather than being a mute 4px rule: dropping a file into a wiki
+** imports it, which is consequential enough that the user should be told what
+** is about to happen and how to back out.
+**
+** The text sits on the palette's MESSAGE surface, not on `dropzone-background`.
+** That entry is green in every palette that sets it, but opaque in some
+** (SolarFlare #008800, Nord #a3be8c) and translucent in others, so page
+** foreground on top of it is unreadable in one palette or the other and there
+** is no way to know which without resolving the colour. `message-background`
+** is the surface a palette author already sized for a band of text across the
+** head of the page.
+**
+** The ink on it is `foreground`, not `message-foreground`. The latter is a
+** deliberately MUTED secondary ink - across six palettes it measured 3.26:1 to
+** 5.76:1, under AA for body text in half of them. This is a primary alert
+** about an irreversible import, so it takes the page's own ink, which every
+** palette guarantees against its own surface.
+**
+** The drop colour then does the job it is good at - signalling - as a heavy
+** rule under the band rather than as a text background.
+*/
+
+.tc-dropzone.tc-dragover::before {
+	content: "<<lingo DropMessage>>";
+	display: block;
+	position: fixed;
+	inset-block-start: 0;
+	inset-inline: 0;
+	z-index: 10000;
+	padding: var(--btc-space-xs) var(--btc-space-md);
+	background-color: var(--tpc-message-background);
+	color: var(--tpc-foreground);
+
+	/* Same tape, the other meaning — so it takes the drop colour rather than
+	   the oxide. The pattern is one token; only the ink changes. */
+	--iw-hazard-ink: var(--btc-drop);
+	border-block-end: 6px solid transparent;
+	border-image: var(--iw-hazard) 6;
+	font-family: var(--btc-font-ui);
+	font-size: 0.875rem;
+	font-weight: 500;
+	letter-spacing: 0.01em;
+	text-align: center;
+	pointer-events: none;
+}
+
+/* ---- Fold / unfold banners --------------------------------------------
+** Vanilla hangs these in the tiddler's left gutter with negative margins.
+** Ironworks already HAS a gutter with meaning — the margin rule — so the
+** banners are placed inside it and aligned to it. The fold handle becomes a
+** strip along the rule; the unfold banner a hairline across the sheet. */
+
+.tc-fold-banner {
+	position: absolute;
+	inset-block: var(--btc-space-xs);
+	inset-inline-start: 0;
+	inline-size: var(--iw-plate-margin);
+	padding: 0;
+	margin: 0;
+	background: none;
+	border: none;
+	text-align: center;
+	border-radius: var(--btc-radius);
+	transition: background-color 120ms var(--btc-ease-out);
+}
+
+blockquote.tc-big-quote::before {
+	content: open-quote;
+	position: absolute;
+	inset-inline-start: -0.36em;
+	inset-block-start: -0.08em;
+	font-family: var(--btc-font-body);
+	font-size: 4em;
+	line-height: 1;
+	color: var(--iw-oxide);
+	pointer-events: none;
+}

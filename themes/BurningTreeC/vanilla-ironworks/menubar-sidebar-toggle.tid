@@ -6,6 +6,6 @@ description: Show or hide the sidebar
 custom-menu-content: <$transclude tiddler="$:/themes/BurningTreeC/vanilla-ironworks/menubar-sidebar-toggle" mode="inline"/>
 
 \whitespace trim
-<$list filter="[{$:/themes/BurningTreeC/vanilla-ironworks/options/sidebarside}match[start]]" variable="ignore">
+<$list filter="[{$:/theme}addsuffix[/options/sidebarside]get[text]match[start]]" variable="ignore">
 {{$:/themes/BurningTreeC/vanilla-ironworks/sidebar-toggle}}
 </$list>

@@ -1,0 +1,264 @@
+title: $:/themes/BurningTreeC/vanilla-ironworks/plugins/minimap
+tags: [[$:/tags/Stylesheet]]
+code-body: yes
+
+\rules only filteredtranscludeinline transcludeinline macrodef macrocallinline html
+
+<$list filter="[[$:/plugins/BurningTreeC/minimap]is[tiddler]]" variable="ignore">
+
+/* ==========================================================================
+** Minimap — reserving the edge
+**
+** The plugin pins the map to the right of the VIEWPORT: it is placed once,
+** from the page template, `position: fixed` at `right: 0`, and it knows
+** nothing about the theme's layout. So without this sheet the map is simply
+** drawn on top of whatever is already there — which, in this family, is the
+** sidebar.
+**
+** This is the geometry half and it lives in Core because it is geometry: the
+** arithmetic below is the same in both layout modes and none of it is a design
+** decision. How the map itself LOOKS is a theme decision, and each theme has
+** its own sheet for that.
+**
+** The whole sheet is one idea: take a strip off the end of the layout and give
+** it to the map. Everything the layout anchors to that edge moves in by the
+** strip's width, and everything that measures against the edge measures
+** against the new one.
+** ========================================================================== */
+
+/*
+** The strip.
+**
+** The plugin publishes --tv-minimap-reserve: the width the map occupies, or
+** zero when it is switched off or hidden below the sidebar breakpoint. It is
+** aliased into the theme's own vocabulary here so the arithmetic below reads
+** like the rest of the layout, and so there is one place to look if the
+** plugin ever renames it.
+**
+** The fallback matters. A theme sheet is loaded whenever the plugin tiddler
+** exists, and an older build of the plugin published no such variable — in
+** which case the strip is computed from the width config the same way the
+** plugin's own baseline is.
+*/
+html {
+	--btc-minimap-reserve: var(--tv-minimap-reserve, var(--tv-minimap-width, 120px));
+}
+
+/*
+** Everything below is inside the sidebar breakpoint, because below it the
+** plugin hides the map and publishes a zero reserve — so there is nothing to
+** make room for and the layout is left exactly as the theme drew it.
+**
+** Everything below is also left-to-right only. RTL is deliberately left alone.
+**
+** The plugin has no RTL handling at all — `right: 0` is physical — so in a
+** right-to-left wiki the map lands on the story river's side rather than the
+** sidebar's, and the reserve below would move the wrong things. Doing nothing
+** leaves the map overlapping the river, which is wrong but honest and easy to
+** see; guessing would produce a layout that is wrong in a way that looks
+** deliberate. The fix belongs in the plugin, in the form of a logical
+** `inset-inline-end`.
+*/
+@media (min-width: {{{ [{$:/theme}addsuffix[/metrics/sidebarbreakpoint]get[text]] }}}) {
+
+	/* ---- The sidebar --------------------------------------------------- */
+
+	/*
+	** In both layout modes the sidebar is anchored to the inline end, so both
+	** are moved by re-stating that one inset — fluid-fixed keeps its fixed
+	** --btc-sidebar-w and slides inward, fixed-fluid has `inline-size: auto`
+	** between two insets and simply gets narrower. That difference is correct:
+	** it is exactly what each mode promises about who absorbs a change in
+	** available width.
+	**
+	** Only when the sidebar is on the end. With `sidebarside: start` it is at
+	** the other edge entirely and the map cannot reach it.
+	**
+	** This is a plain box shift, and it is worth recording that it could not
+	** always be. While the plugin rendered the map from a $:/tags/SideBarSegment
+	** the map lived INSIDE this element — which carries `translate` and
+	** `will-change: translate` for the slide, making it the containing block for
+	** fixed-position descendants, and which clips its own overflow. Moving the
+	** sidebar took the map with it, and compensating for that only moved the map
+	** into the clip. The plugin now places the map once at the page level in
+	** every sidebar state, so it is fixed to the viewport and none of that
+	** applies: the sidebar can simply move.
+	*/
+	html:not([dir="rtl"]) .btc-layout-fluid-fixed:not(.btc-sidebar-start) .tc-sidebar-scrollable,
+	html:not([dir="rtl"]) .btc-layout-fixed-fluid:not(.btc-sidebar-start) .tc-sidebar-scrollable {
+		inset-inline-end: var(--btc-minimap-reserve);
+	}
+
+	/* ---- The top bar ---------------------------------------------------- */
+
+	/*
+	** The trailing top bar is pinned to the same edge and is drawn at z-index
+	** 1200, well above the map's 400 — so left alone it does not go under the
+	** map, it sits on top of it, which is worse. It moves in by the same strip.
+	*/
+	html:not([dir="rtl"]) .tc-topbar-right {
+		inset-inline-end: var(--btc-minimap-reserve);
+	}
+
+	/* ---- The story river ------------------------------------------------ */
+
+	/*
+	** The river needs the strip too, and NOT scaled by --btc-open.
+	**
+	** Everything else that answers to the sidebar is multiplied by --btc-open
+	** so it rides the slide. The map does not answer to the sidebar at all: it
+	** is placed once, at the page level, in every sidebar state, so the strip
+	** it occupies is the same width whether the sidebar is open or shut.
+	** Scaling this by --btc-open would run the river back under the map every
+	** time the sidebar was hidden — which is precisely when the river grows to
+	** fill the space.
+	*/
+	html:not([dir="rtl"]) .btc-layout-fluid-fixed:not(.btc-sidebar-start) .tc-story-river,
+	html:not([dir="rtl"]) .btc-fullwidth.btc-layout-fluid-fixed:not(.btc-sidebar-start) .tc-story-river {
+		margin-inline-end: calc(var(--btc-open) * var(--btc-sidebar-w) + var(--btc-minimap-reserve));
+	}
+
+	html:not([dir="rtl"]) .btc-fullwidth.btc-layout-fixed-fluid:not(.btc-sidebar-start) .tc-story-river {
+		margin-inline-end: calc(
+			var(--btc-open) * max(0px, 100vw - var(--btc-story-right)) + var(--btc-minimap-reserve)
+		);
+	}
+
+	/*
+	** fixed-fluid, sidebar open: the river keeps its fixed width and does not
+	** reach the edge, so there is nothing to reserve. What does need correcting
+	** is the glide — when the sidebar closes the river slides to the centre of
+	** the viewport, and the centre it should aim for is the centre of what is
+	** left after the strip, or it drifts half a map to the right.
+	*/
+	html:not([dir="rtl"]) .btc-layout-fixed-fluid:not(.btc-sidebar-start) .tc-story-river {
+		translate: calc(
+			var(--btc-dir) * (1 - var(--btc-open)) *
+			((100vw - var(--btc-minimap-reserve) - var(--btc-story-w)) / 2 - var(--btc-river-start))
+		) 0;
+	}
+
+	/* ---- Sidebar on the leading edge ------------------------------------ */
+
+	/*
+	** The sidebar is at the other edge, so the map has only the river to
+	** collide with. In fluid-fixed the river's trailing margin is the plain
+	** story-left gutter; in fixed-fluid it is zero and the river is placed by
+	** its leading margin instead. Both simply gain the strip.
+	*/
+	html:not([dir="rtl"]) .btc-layout-fluid-fixed.btc-sidebar-start .tc-story-river,
+	html:not([dir="rtl"]) .btc-fullwidth.btc-layout-fluid-fixed.btc-sidebar-start .tc-story-river {
+		margin-inline: calc(var(--btc-open) * var(--btc-sidebar-w))
+			calc(var(--btc-story-left) + var(--btc-minimap-reserve));
+	}
+
+	html:not([dir="rtl"]) .btc-layout-fixed-fluid.btc-sidebar-start .tc-story-river {
+		margin-inline: var(--btc-river-start) var(--btc-minimap-reserve);
+	}
+
+	html:not([dir="rtl"]) .btc-fullwidth.btc-layout-fixed-fluid.btc-sidebar-start .tc-story-river {
+		margin-inline: calc(var(--btc-open) * max(0px, 100vw - var(--btc-story-right)))
+			calc(var(--btc-story-left) + var(--btc-minimap-reserve));
+	}
+}
+
+/* ==========================================================================
+** Minimap — Ironworks
+**
+** The geometry is not here — it is stated once, above, and this half is only
+** about what the map is made of. The two live in one file because they answer
+** to one plugin, and the split between them is worth keeping visible: nothing
+** above this banner is a design decision, and nothing below it is arithmetic.
+**
+** In this theme the map is a strip of the same rolled sheet the sidebar is cut
+** from. It is not a plate: a plate is a thing you work on, and this is stock
+** standing on edge beside the bench — so it gets the rolling grain and a
+** machined edge, and none of the plate's furniture. No screws, no patina.
+** Screws fasten something down and nothing is fastened here; patina is wear on
+** a worked face and this face has not been worked.
+** ========================================================================== */
+
+/*
+** The grain runs along the strip.
+**
+** --iw-grain draws its hairlines vertically, which is what a tall panel wants
+** and what the sidebar uses. The map is exactly that shape, so it takes the
+** same one rather than the --iw-grain-along variant, and the mark the sheet
+** took from the rollers runs the same way in both.
+*/
+.tc-minimap {
+	background-color: var(--tpc-page-background);
+	background-image: var(--iw-grain);
+	border-left: none;
+	border-inline-start: 1px solid var(--iw-plate-edge);
+	box-shadow: inset 1px 0 0 var(--iw-lit);
+}
+
+/*
+** The viewport indicator is an ember wash.
+**
+** The accent in this theme is the one warm thing in a cold room, and "where
+** you are" is exactly the job it does everywhere else — the light catch, the
+** primary key, the drag target. The plugin's neutral grey would be the only
+** cold mark on the strip.
+**
+** It is a WASH and not the solid --iw-oxide: the indicator sits ON TOP of the
+** cloned tiddlers, so anything solid would black out the part of the map you
+** are actually trying to read.
+*/
+.tc-minimap-overlay {
+	background: var(--tpc-primary);
+	opacity: 0.16;
+}
+
+.tc-minimap-overlay:hover {
+	opacity: 0.26;
+}
+
+.tc-minimap-active .tc-minimap-overlay {
+	opacity: 0.34;
+}
+
+/* Blocks mode: stock, not ink — the same iron the plates are cut from. */
+.tc-minimap-block-filled {
+	background: var(--tpc-foreground);
+	opacity: 0.13;
+	border-radius: 0;
+}
+
+/*
+** The grip is a pull, and it is cut like everything else here.
+**
+** Zero radius, because the theme's radius is zero and for a reason: a radius
+** is a moulding artefact and this is cut from stock. The plugin's rounded
+** 6px tab would be the one moulded object in the shop.
+**
+** The light catch and the thickness shadow are the plate's own two edges, at
+** the scale of a 14px tab — the same treatment every cut edge in this theme
+** gets, so the pull reads as a piece of the same material rather than as a
+** control that arrived from somewhere else.
+*/
+.tc-minimap-grip {
+	background: var(--tpc-page-background);
+	background-image: var(--iw-grain-along);
+	border: 1px solid var(--iw-plate-edge);
+	border-inline-end: none;
+	border-radius: 0;
+	color: var(--btc-ink-faint);
+	box-shadow:
+		inset 0 1px 0 var(--iw-lit),
+		inset 0 -1px 0 var(--iw-shade),
+		-2px 0 0 var(--iw-shade);
+}
+
+.tc-minimap-grip:hover {
+	background-color: var(--iw-oxide-stain);
+	color: var(--tpc-foreground);
+}
+
+.tc-minimap-grip:focus-visible {
+	outline: 2px solid var(--btc-focus);
+	outline-offset: 2px;
+}
+
+</$list>

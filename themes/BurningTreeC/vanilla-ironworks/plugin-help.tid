@@ -32,13 +32,13 @@ code-body: yes
 	max-block-size: calc(100vh - 1em);
 	overflow: auto;
 	-webkit-overflow-scrolling: touch;
-	padding: var(--iw-space-md);
-	margin: var(--iw-space-sm);
+	padding: var(--btc-space-md);
+	margin: var(--btc-space-sm);
 	background: var(--tpc-tiddler-background);
 	border: 1px solid var(--iw-plate-edge);
-	border-radius: var(--iw-radius-lg);
-	box-shadow: 0 1px 2px var(--iw-shadow-soft), 0 16px 36px -16px var(--iw-shadow);
-	font-family: var(--iw-font-ui);
+	border-radius: var(--btc-radius-lg);
+	box-shadow: 0 1px 2px var(--btc-shadow-soft), 0 16px 36px -16px var(--btc-shadow);
+	font-family: var(--btc-font-ui);
 	font-size: 0.875rem;
 	z-index: 1000;
 	scrollbar-width: thin;
@@ -53,7 +53,7 @@ code-body: yes
 dl.tc-help-cheatsheet {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-	gap: var(--iw-space-2xs) var(--iw-space-sm);
+	gap: var(--btc-space-2xs) var(--btc-space-sm);
 	align-items: baseline;
 	overflow: visible;
 	margin: 0;
@@ -70,9 +70,9 @@ dl.tc-help-cheatsheet {
 }
 
 .tc-help-cheatsheet > dt {
-	font-family: var(--iw-font-code);
+	font-family: var(--btc-font-code);
 	font-weight: normal;
-	color: var(--iw-ink-soft);
+	color: var(--btc-ink-soft);
 }
 
 .tc-help-cheatsheet > dt > pre {
@@ -100,8 +100,8 @@ dl.tc-help-cheatsheet {
 	}
 
 	.tc-help-cheatsheet > dd {
-		margin-block-end: var(--iw-space-sm);
-		color: var(--iw-ink-soft);
+		margin-block-end: var(--btc-space-sm);
+		color: var(--btc-ink-soft);
 	}
 }
 

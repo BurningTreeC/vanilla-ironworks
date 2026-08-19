@@ -1,0 +1,24 @@
+title: $:/themes/BurningTreeC/vanilla-ironworks/print
+tags: [[$:/tags/Stylesheet]]
+code-body: yes
+
+\rules only filteredtranscludeinline transcludeinline macrodef macrocallinline
+
+/*
+** Ironworks — print.
+**
+** 1-layout already strips the chrome and flattens the river for print. This
+** file carries the one thing that is specific to THIS theme's surface, and it
+** lived inline in the layout sheet before the layout engine
+** was extracted.
+**
+** The patina comes off on paper. It is a surface treatment on a screen; on a
+** page it is a grey wash under every line of text and ink spent to lay it
+** down, on a surface that is already the colour it is meant to be.
+*/
+@media print {
+
+	.iw-patina .tc-tiddler-frame {
+		background-image: none;
+	}
+}

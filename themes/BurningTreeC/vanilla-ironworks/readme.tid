@@ -4,7 +4,7 @@ title: $:/themes/BurningTreeC/vanilla-ironworks/readme
 
 A machine shop for TiddlyWiki. Soot, cold iron, one ember left in the forge.
 
-It is a //standalone// theme: it does not depend on Vanilla and inherits no rule from it. It shares its layout engine with [[Notebook|$:/themes/BurningTreeC/vanilla-notebook]] and nothing else.
+It does not depend on Vanilla and inherits no rule from it. It does depend on Ironworks is self-contained: it carries the sliding layout engine and the structural CSS itself, and depends on no other theme. Its stylesheets are numbered because their order is load-bearing — `1-layout` sets the geometry, `2-structure` the rules the core markup needs, `3-surface` this theme's material, and the plugin sheets come last. TiddlyWiki concatenates stylesheets in title order, so the numbers are the only thing keeping a theme's overrides after the structure they override.
 
 !! What it is, and what it is not
 
@@ -48,24 +48,20 @@ Vanilla changes the sidebar and story-river layout by swapping CSS rules — the
 Ironworks emits every rule unconditionally and animates one registered custom property instead:
 
 ```
-@property --iw-open { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --btc-open { syntax: "<number>"; inherits: true; initial-value: 1; }
 ```
 
 State reaches CSS as classes on the page container, contributed through the core's `$:/tags/ClassFilters/PageTemplate` hook. One scalar, one transition, both layouts, both text directions.
 
 !! Compatibility shim
 
-Ironworks ships three tiddlers under Vanilla's namespace:
-
-* `$:/themes/tiddlywiki/vanilla/metrics/`
-* `$:/themes/tiddlywiki/vanilla/settings/`
-* `$:/themes/tiddlywiki/vanilla/options/`
+The Vanilla-namespace shim now lives in Ironworks ships all three halves of it — `$:/themes/tiddlywiki/vanilla/metrics/`, `/options/` and `/settings/` — since it no longer shares them with anything.
 
 This is deliberate, and it is a workaround rather than a design choice. The core and several bundled plugins read Vanilla's metric and setting paths directly regardless of which theme is active — `$:/core/stylesheets/custom-properties` builds every `--tp-*` property from them, and the menubar plugin computes its media-query breakpoints from `$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint`. With no Vanilla installed those lookups return empty, which produces invalid CSS such as `@media (max-width: )` and silently drops the affected rules.
 
 These shadow tiddlers only exist while Ironworks is the active theme, so they cannot affect a wiki that has switched back to Vanilla.
 
-> ''Installing Ironworks and Notebook side by side:'' both themes ship this shim under the same three titles, so whichever plugin loads second wins and supplies the Vanilla-namespace copies for both. The values only differ in the font stacks, and only the //inactive// theme's copy is affected — but if you keep both installed and care about the shim, check `$:/themes/tiddlywiki/vanilla/settings/fontfamily` after switching.
+> ''Installing Ironworks and Paper side by side:'' both themes ship this shim under the same three titles, so whichever plugin loads second wins and supplies the Vanilla-namespace copies for both. The values only differ in the font stacks, and only the //inactive// theme's copy is affected — but if you keep both installed and care about the shim, check `$:/themes/tiddlywiki/vanilla/settings/fontfamily` after switching.
 
 > ''Note:'' The shim holds static copies of Ironworks' own defaults. Changing a metric in Ironworks' Control Panel tab does //not// update the Vanilla-namespace copy. If you change the sidebar breakpoint and use the menubar plugin, update `$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint` to match.
 

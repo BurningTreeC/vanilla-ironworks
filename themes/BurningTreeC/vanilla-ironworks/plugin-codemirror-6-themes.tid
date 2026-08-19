@@ -40,7 +40,7 @@ code-body: yes
 */
 .tc-editor-codemirror6[data-cm6-theme] .cm-editor,
 .tc-editor-codemirror6 .cm-editor[data-cm6-theme] {
-	border-radius: var(--iw-radius);
+	border-radius: var(--btc-radius);
 }
 
 .tc-editor-codemirror6:has([data-cm6-theme]),
