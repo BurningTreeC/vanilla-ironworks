@@ -309,13 +309,37 @@ code-body: yes
 	** smaller ones scattered across three periods read less like a grid than
 	** two big ones on two.
 	*/
-	--iw-patina:
-		var(--iw-dust),
-		var(--iw-crackle),
+	/*
+	** Split in two halves rather than written as one list, and the reason is
+	** cost rather than composition — the whole patina is still --iw-patina and
+	** everything that paints it goes on using that.
+	**
+	** The two halves rasterize completely differently when the plate CHANGES
+	** WIDTH, which is what the sidebar resizer does on every pointer move. A
+	** tile smaller than the box it repeats into is rasterized once and blitted;
+	** a tile LARGER than the box cannot be reused as a pattern, so it is
+	** regenerated at the element's geometry every time that geometry moves. The
+	** grit tiles are 260 and 720 and fit inside a plate; all three stain tiles
+	** are bigger than one in at least one axis, and three of them stacked cost
+	** roughly 35ms per frame across a river of eighteen plates. The grit costs
+	** nothing measurable.
+	**
+	** So plugin-resizer.tid drops the stain half for the duration of a drag and
+	** keeps the grit. Splitting the token here is what lets it do that by
+	** naming the half it wants, instead of restating five layers and five sizes
+	** in a second place that would drift the first time either changed.
+	*/
+	--iw-patina-grit: var(--iw-dust), var(--iw-crackle);
+	--iw-patina-grit-size: 260px 260px, 720px 720px;
+
+	--iw-patina-stain:
 		radial-gradient(40% 36% at 46% 48%, var(--iw-oxide-stain), transparent 80%),
 		radial-gradient(38% 34% at 56% 54%, var(--iw-oxide-stain), transparent 80%),
 		radial-gradient(30% 40% at 62% 38%, var(--iw-oxide-stain), transparent 82%);
-	--iw-patina-size: 260px 260px, 720px 720px, 940px 780px, 1180px 1020px, 700px 1340px;
+	--iw-patina-stain-size: 940px 780px, 1180px 1020px, 700px 1340px;
+
+	--iw-patina: var(--iw-patina-grit), var(--iw-patina-stain);
+	--iw-patina-size: var(--iw-patina-grit-size), var(--iw-patina-stain-size);
 
 	/*
 	** Rolling grain. A sheet that came off a mill keeps the direction it was

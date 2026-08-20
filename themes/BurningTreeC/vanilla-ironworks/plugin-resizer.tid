@@ -388,4 +388,36 @@ body.tc-resizing .tc-story-river .tc-tiddler-frame {
 	background: var(--iw-oxide);
 }
 
+/* ---- The plates, while the seam is being moved ------------------------- */
+
+/*
+** The rust comes off the plates for the duration of a sidebar drag, and the
+** grit stays on.
+**
+** Not a taste decision. Dragging the seam changes every plate's width on every
+** pointer move, and a background tile LARGER than the box it repeats into
+** cannot be cached and blitted — it is regenerated at the element's geometry
+** each time that geometry moves. The three stain tiles (940x780, 1180x1020,
+** 700x1340) are all bigger than a plate in at least one axis, and three of them
+** stacked measured ~52ms per frame across a river of eighteen plates: about
+** 19fps, against a locked 60 with them off. The two grit tiles are 260 and 720,
+** fit inside a plate, and cost nothing measurable — so they are what stays.
+** 3-surface.tid's token block splits the patina in two for exactly this.
+**
+** Scoped through :has() on the SIDEBAR grip specifically, rather than through
+** the `tc-resizing` class the plugin puts on the body. The body class is shared
+** with the editor's preview handle, and that drag resizes the two columns
+** inside one editor — no plate changes width, so there is nothing to buy and a
+** river full of plates would shed its rust for no reason.
+**
+** .iw-patina is repeated on the page container rather than assumed, because
+** this rule has to lose to nothing and win over nothing: with the patina switch
+** off there is no background on a plate at all, and a rule that named only the
+** drag would put the grit back on a theme the user had asked to keep clean.
+*/
+.iw-patina.tc-page-container:has(.tc-sidebar-resizer.tc-resizer-active) .tc-tiddler-frame {
+	background-image: var(--iw-patina-grit);
+	background-size: var(--iw-patina-grit-size);
+}
+
 </$list>
