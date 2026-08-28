@@ -213,9 +213,19 @@ pre > code {
 	align-items: center;
 }
 
-/* Advanced Search's filter tab puts a line of prose immediately above this
-   row, with nothing between them. */
-.tc-advanced-search {
+/*
+** Every Advanced Search tab puts a line of prose immediately above this row,
+** with nothing between them.
+**
+** This used to be hung on .tc-advanced-search, and that class is only on the
+** Filter tab (core/ui/AdvancedSearch/Filter.tid) — Standard, System and
+** Shadows emit a bare .tc-search. So one tab in four had the gap and the
+** field jumped as you moved along the tab strip. The condition that actually
+** describes it is "a search row set in running text", which is the tiddler
+** body and never the sidebar: core has exactly five .tc-search rows, the four
+** tabs and $:/core/ui/SideBarSegments/search, and only the tabs are in a body.
+*/
+:is(.tc-tiddler-body, .tc-tiddler-preview-preview) .tc-search {
 	margin-block-start: var(--btc-space-sm);
 }
 
@@ -258,7 +268,7 @@ pre > code {
 ** hover wash, which is deliberately much lighter — a keyboard selection has to
 ** be distinguishable from the row the mouse happens to be over.
 */
-.tc-tag-button-selected,
+.tc-btn-invisible.tc-tag-button-selected,
 .tc-list-item-selected a.tc-tiddlylink,
 a.tc-list-item-selected,
 .tc-block-dropdown .tc-list-item-selected a.tc-tiddlylink,
@@ -660,6 +670,14 @@ nav.tc-menubar .tc-form-inline {
 .tc-drop-down,
 .tc-block-dropdown {
 	min-inline-size: 12rem;
+
+	/*
+	** And a ceiling, because the rows below are `nowrap` and free to widen the
+	** panel: one long tiddler title in a tag pill's dropdown would otherwise
+	** stretch the panel across the window. Rows ellipsis against this.
+	*/
+	max-inline-size: min(28rem, calc(100vw - 2rem));
+
 	padding: var(--btc-space-2xs) 0;
 	background-color: color-mix(in srgb, var(--tpc-dropdown-background) 92%, transparent);
 	backdrop-filter: blur(8px) saturate(1.4);
@@ -739,27 +757,81 @@ nav.tc-menubar .tc-form-inline {
 ** div, so those links kept no inline padding and sat flush against the panel
 ** edge.
 **
-** So this is a descendant selector, as Vanilla's always was, with the two
-** places that genuinely must not become full-width blocks excluded by name:
-** links inside a dropdown's prose, and a tab strip nested in a dropdown.
-** Tag pills are excluded as well — a chip that spans the panel is not a chip,
-** and they bring their own hover.
+** So this is a descendant selector, as Vanilla's always was, with the places
+** that genuinely must not become full-width blocks excluded by name: links
+** inside a dropdown's prose, and a tab strip nested in a dropdown. Tag pills
+** are excluded as well — a chip that spans the panel is not a chip, and they
+** bring their own hover.
+**
+** THE EXCLUSION MUST BE ANCHORED TO THE DROPDOWN. It was written `p :is(a,
+** button)`, with no ancestor in front of it, and a descendant combinator
+** inside :not() walks the WHOLE chain — it does not care that the <p> it
+** finds is outside .tc-drop-down. TiddlyWiki wraps a great deal in paragraphs:
+** a sidebar tab's content sits under three of them, and a tiddler body renders
+** its table as `<p><table class="tc-tag-manager-table">…</table></p>`. So the
+** rule silently switched itself off for every popup in the sidebar and every
+** popup opened from a p-wrapped tiddler body — the tag pill dropdowns in the
+** sidebar's Tags tab and in $:/TagManager, that tag manager's icon chooser,
+** the sidebar's More menu — and those items came out as bare inline links:
+** no padding, no full-width row, and the ambient link colour instead of the
+** menu's ink. The identical pills in the ViewTemplate looked right the whole
+** time, because .tc-tags-wrapper is not inside a <p>, which is exactly why
+** the fault reads as "the sidebar and the TagManager are missing styles".
+**
+** Anchoring it means the rule now genuinely reaches everything, so the two
+** choosers have to be named too. A colour swatch and an icon thumbnail are
+** <a> elements laid out as a grid of fixed 2em / 4em cells
+** ($:/core/macros/colour-picker and the iconEditor macro in $:/TagManager);
+** turned into full-width blocks the grid collapses to one swatch per line.
+** .tc-chooser-item rows bring their own padding and would take this rule's
+** on top of it.
 **
 ** It also no longer resets `background` and `border`. Those were safe on bare
 ** menu buttons and are not safe on everything a dropdown can contain; every
 ** real menu item already carries .tc-btn-invisible, which zeroes both.
 */
-.tc-drop-down :is(a, button):not(p :is(a, button), .tc-tab-buttons button, .tc-tag-label) {
+.tc-drop-down :is(a, button):not(
+		.tc-drop-down p :is(a, button),
+		.tc-tab-buttons button,
+		.tc-tag-label,
+		:is(.tc-colour-chooser, .tc-image-chooser, .tc-chooser-item) :is(a, button)) {
 	display: block;
-	inline-size: 100%;
+
+	/*
+	** `min-inline-size`, not `inline-size`. A menu row must fill the panel, but
+	** a row at `inline-size: 100%` contributes nothing to the panel's max-content
+	** width, so the panel sized itself off whatever else it happened to contain
+	** and the longest row hung out past its own border — plainly visible in the
+	** icon chooser in $:/TagManager, where `$:/core/images/advanced-search-button`
+	** ran through the right edge. As a minimum the row still fills the panel AND
+	** widens it, which is what the panel's `white-space: nowrap` already assumes.
+	*/
+	min-inline-size: 100%;
+
+	/* The cap on .tc-drop-down above is what this truncates against. */
+	overflow: hidden;
+	text-overflow: ellipsis;
+
 	text-align: start;
 	padding: var(--btc-space-2xs) var(--btc-space-sm);
 	color: var(--tpc-foreground);
 	cursor: pointer;
 }
 
-.tc-drop-down :is(a, button):not(p :is(a, button), .tc-tab-buttons button, .tc-tag-label):hover {
+/*
+** The hover has to restate the colour, because a menu item is a link standing
+** in someone else's house. `.tc-sidebar-lists .tc-tiddlylink:hover` is (0,3,0)
+** and outranks the resting rule above at (0,2,3), so a hovered item in a
+** sidebar popup jumped to the sidebar's link colour while its neighbours
+** stayed the menu's ink.
+*/
+.tc-drop-down :is(a, button):not(
+		.tc-drop-down p :is(a, button),
+		.tc-tab-buttons button,
+		.tc-tag-label,
+		:is(.tc-colour-chooser, .tc-image-chooser, .tc-chooser-item) :is(a, button)):hover {
 	background-color: var(--btc-accent-wash);
+	color: var(--tpc-foreground);
 }
 
 .tc-drop-down-wrapper {

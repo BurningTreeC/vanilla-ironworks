@@ -1083,7 +1083,25 @@ html[dir="rtl"] {
 ** One tile, 47px, repeated — the stops inside it are irregular, so the eye
 ** reads a hand-drawn line rather than a dash pattern.
 */
-:is(.tc-tiddler-body, .tc-tiddler-preview-preview) hr {
+/*
+** Prose rules stop at the edge of a popup.
+**
+** A dropdown opened from inside a tiddler body is rendered IN PLACE, so it is
+** a .tc-tiddler-body descendant and every rule scoped to the body reaches into
+** it. That is wrong for the two below, which describe prose. A menu separator
+** is not a section break — this rule gives it 32px of air in Paper and a
+** hand-scored line in Ironworks, where the dropdown wants a hairline — and a
+** menu row is not a sentence, so it must not be underlined.
+**
+** $:/TagManager is where this shows: a tiddler body renders its table as
+** `<p><table>…</table></p>`, so every popup that table opens — a tag pill's
+** dropdown, the icon chooser — came out with a paragraph-sized gap where its
+** <hr> should be a hairline and every row underlined, while the same popup
+** opened from a tag pill in the sidebar was correct. Compare the anchored
+** :not() on the menu-item rule in 2-structure, which is the same fault seen
+** from the other side.
+*/
+:is(.tc-tiddler-body, .tc-tiddler-preview-preview) hr:not(:is(.tc-drop-down, .tc-block-dropdown) hr) {
 	border: none;
 	block-size: 2px;
 	background-color: transparent;
@@ -1119,7 +1137,8 @@ html[dir="rtl"] {
 	transition: color 120ms var(--btc-ease-out);
 }
 
-:is(.tc-tiddler-body, .tc-tiddler-preview-preview) .tc-tiddlylink {
+/* Prose again — see the note on the <hr> rule above. */
+:is(.tc-tiddler-body, .tc-tiddler-preview-preview) .tc-tiddlylink:not(:is(.tc-drop-down, .tc-block-dropdown) .tc-tiddlylink) {
 	text-decoration: underline;
 	text-decoration-color: var(--btc-accent-edge);
 }
@@ -1961,8 +1980,17 @@ textarea.tc-edit-texteditor {
 ** flex }` at (0,1,0). The row then shrink-wraps to its content instead of
 ** filling the sidebar — which is why every plugin row came out a different
 ** width. Vanilla never hits this because its sidebar rule sets colour only.
+**
+** It must NOT reach a popup either. A dropdown opened from the sidebar is
+** rendered in place, so its rows are .tc-sidebar-lists descendants and this
+** selector matches them — at (0,3,0), which outranks the menu-item rule in
+** 2-structure at (0,2,3). The rows then kept `display: inline-block` and 1px
+** of block padding instead of becoming full-width menu rows, so the tag pill
+** dropdown in the Tags tab read as a run of links rather than a menu. A popup
+** is not a sidebar list item however the DOM happens to nest it, so it is
+** excluded by name rather than fought on specificity.
 */
-.tc-sidebar-lists .tc-tiddlylink:not(.tc-plugin-info) {
+.tc-sidebar-lists .tc-tiddlylink:not(.tc-plugin-info, .tc-drop-down .tc-tiddlylink) {
 	display: inline-block;
 	padding-block: 1px;
 }
@@ -2432,6 +2460,22 @@ textarea.tc-edit-texteditor {
 	block-size: 100%;
 }
 
+/*
+** A colour input IS a swatch. The browser paints its whole content box in the
+** chosen colour, so the field padding every other input gets here leaves a
+** hairline of colour adrift in a box of page background and the control stops
+** reading as a colour at all. $:/PaletteManager carried this as a one-off
+** class; the same input is unclassed in $:/Manager's Colour panel
+** (core/ui/Manager/ItemSidebarColour.tid) and in the colour picker's "new
+** colour" field, so it belongs on the type. The class rule still follows, and
+** still wins the inline size it needs.
+*/
+input[type="color"] {
+	padding: 0;
+	min-inline-size: 3em;
+	cursor: pointer;
+}
+
 input.tc-palette-manager-colour-input {
 	inline-size: 100%;
 	padding: 0;
@@ -2620,6 +2664,22 @@ input.tc-palette-manager-colour-input {
 
 .tc-tag-manager-tag {
 	inline-size: 100%;
+}
+
+/*
+** $:/TagManager emits TWO rows per tag: the tag itself, and a detail row
+** holding the colour/icon editor that the Info button reveals. The detail row
+** is always in the table — closed, its cells hold nothing but
+** `<span class="tc-reveal" hidden>` — so with the table's cell padding and
+** rule on it, every tag came with an empty 17px stripe underneath and the
+** table read as broken rather than ruled.
+**
+** Collapsed by the reveal's own `hidden`, so it costs nothing when the row is
+** open and needs no state of its own.
+*/
+.tc-tag-manager-table tr:has(> td > .tc-reveal[hidden]) > td {
+	padding-block: 0;
+	border-block-end: none;
 }
 
 /* ---- Test cases ---- */
